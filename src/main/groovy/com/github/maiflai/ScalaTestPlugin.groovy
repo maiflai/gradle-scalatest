@@ -6,6 +6,10 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.scala.ScalaPlugin
 import org.gradle.api.tasks.testing.Test
 
+/**
+ * Applies the Java & Scala Plugins
+ * Replaces all Java Test actions with a <code>ScalaTestAction</code>
+ */
 class ScalaTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project t) {

@@ -6,6 +6,12 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
 
+/**
+ * <p>Designed to replace the normal Test Action with a new JavaExecAction
+ * launching the scalatest Runner.</p>
+ * <p>Classpath, JVM Args and System Properties are propagated.</p>
+ * <p>Tests are launched against the testClassesDir.</p>
+ */
 class ScalaTestAction implements Action<Test> {
 
     @Override
