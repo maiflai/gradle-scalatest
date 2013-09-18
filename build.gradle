@@ -10,6 +10,7 @@ buildscript {
 
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'groovy'
 apply plugin: 'release'
 
@@ -18,4 +19,65 @@ group 'com.github.maiflai'
 dependencies {
     compile gradleApi()
     compile localGroovy()
+}
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'groovydoc'
+    from "$buildDir/docs/groovydoc"
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives groovydocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+
+            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'GradleScalaTest'
+                description 'gradle-scalatest is a Gradle plugin for executing scalatest tests'
+                url 'http://maiflai.github.com/'
+
+                scm {
+                    url 'scm:git:https://github.com/maiflai/gradle-scalatest.git'
+                }
+
+                licenses {
+                    license {
+                        name 'unlicense'
+                        url 'http://unlicense.org'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'maiflai'
+                    }
+                }
+            }
+        }
+    }
 }
