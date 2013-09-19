@@ -7,10 +7,10 @@ Getting started
 ```groovy
 buildscript {
     repositories {
-        maven { url 'https://github.com/maiflai/mvn-repo/raw/master/snapshots' }
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.github.maiflai:gradle-scalatest:0.1-SNAPSHOT'
+        classpath 'com.github.maiflai:gradle-scalatest:0.1'
     }
 }
 
