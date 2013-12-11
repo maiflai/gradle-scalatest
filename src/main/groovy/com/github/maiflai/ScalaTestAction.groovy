@@ -37,12 +37,9 @@ class ScalaTestAction implements Action<Test> {
         }
         if (t.reports.getHtml().isEnabled()){
             args.add('-h')
-            def point = t.reports.getHtml().getEntryPoint()
-            if (point.isDirectory()){
-                args.add(point.getAbsolutePath())
-            } else {
-                args.add(point.getParent())
-            }
+             def dest = t.reports.getHtml().getDestination()
+             dest.mkdirs()
+             args.add(dest.getAbsolutePath())
         }
         return args
     }
