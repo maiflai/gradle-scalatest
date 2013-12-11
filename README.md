@@ -10,7 +10,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.github.maiflai:gradle-scalatest:0.1'
+        classpath 'com.github.maiflai:gradle-scalatest:0.2'
     }
 }
 
