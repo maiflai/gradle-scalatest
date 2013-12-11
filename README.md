@@ -18,8 +18,8 @@ apply plugin: 'scalatest'
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.1'
-    testCompile 'org.scalatest:scalatest_2.10:2.0.M5b'
-    testRuntime 'org.pegdown:pegdown:1.0.1'
+    testCompile 'org.scalatest:scalatest_2.10:2.0'
+    testRuntime 'org.pegdown:pegdown:1.1.0'
 }
 ```
 
