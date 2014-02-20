@@ -55,4 +55,19 @@ class ScalaTestActionTest {
         test.systemProperties.put('bob', 'rita')
         assertThat(commandLine(test), hasItem('-Dbob=rita'))
     }
+
+    @Test
+    public void parallelDefaultsToProcessorCount() throws Exception {
+        Task test = testTask()
+        int processors = Runtime.runtime.availableProcessors()
+        assertThat(commandLine(test), hasItem("-P$processors".toString()))
+    }
+
+    @Test
+    public void parallelSupportsConfiguration() throws Exception {
+        Task test = testTask()
+        int forks = Runtime.runtime.availableProcessors() + 1
+        test.maxParallelForks = forks
+        assertThat(commandLine(test), hasItem("-P$forks".toString()))
+    }
 }

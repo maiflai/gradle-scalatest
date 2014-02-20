@@ -24,3 +24,16 @@ dependencies {
 ```
 
 This replaces the existing test task actions with a scalatest implementation.
+
+---
+Note that the default behaviour is to use as many parallel threads as you have available processors.
+
+`Test` tasks are modified at the time that you apply the plugin (as otherwise they would default to single-threaded).
+
+To disable this, you should configure your test tasks accordingly.
+
+```groovy
+test {
+    maxParallelForks = 1
+}
+```
