@@ -16,14 +16,17 @@ class ScalaTestAction implements Action<Test> {
 
     @Override
     void execute(Test t) {
+        makeAction(t).execute();
+    }
+
+    static JavaExecAction makeAction(Test t) {
         FileResolver fileResolver = t.getServices().get(FileResolver.class);
         JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver);
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
         javaExecHandleBuilder.setClasspath(t.getClasspath())
+        javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
         javaExecHandleBuilder.setArgs(getArgs(t))
-        javaExecHandleBuilder.setJvmArgs(t.getJvmArgs())
-        javaExecHandleBuilder.setSystemProperties(t.getSystemProperties())
-        javaExecHandleBuilder.execute();
+        return javaExecHandleBuilder
     }
 
     private static Iterable<String> getArgs(Test t) {
