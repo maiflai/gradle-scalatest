@@ -31,7 +31,11 @@ class ScalaTestAction implements Action<Test> {
 
     private static Iterable<String> getArgs(Test t) {
         List<String> args = new ArrayList<String>()
-        args.add('-P')
+        if (t.maxParallelForks == 0) {
+            args.add('-P')
+        } else {
+            args.add("-P${t.maxParallelForks}".toString())
+        }
         args.add('-R')
         args.add(t.getTestClassesDir().absolutePath)
         if (t.reports.getJunitXml().isEnabled()){

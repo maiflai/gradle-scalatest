@@ -18,6 +18,7 @@ class ScalaTestPlugin implements Plugin<Project> {
             t.plugins.apply(JavaPlugin)
             t.plugins.apply(ScalaPlugin)
             t.tasks.withType(Test) { test ->
+                test.maxParallelForks = Runtime.runtime.availableProcessors()
                 test.actions = [new ScalaTestAction()]
             }
         }
