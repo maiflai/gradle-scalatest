@@ -70,4 +70,5 @@ class ScalaTestActionTest {
         test.maxParallelForks = forks
         assertThat(commandLine(test), hasItem("-P$forks".toString()))
     }
+
 }
