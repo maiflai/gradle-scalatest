@@ -71,17 +71,4 @@ class ScalaTestActionTest {
         assertThat(commandLine(test), hasItem("-P$forks".toString()))
     }
 
-    @Test
-    public void stdOutIsConfigured() throws Exception {
-        Task test = testTask()
-        test.testLogging.events('standard_out')
-        assertThat(commandLine(test), hasItem('-o'))
-    }
-
-    @Test
-    public void stdErrIsConfigured() throws Exception {
-        Task test = testTask()
-        test.testLogging.events('standard_error')
-        assertThat(commandLine(test), hasItem('-e'))
-    }
 }
