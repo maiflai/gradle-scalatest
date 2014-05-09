@@ -3,6 +3,7 @@ package com.github.maiflai
 import org.gradle.api.Action
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
 
@@ -47,6 +48,12 @@ class ScalaTestAction implements Action<Test> {
              def dest = t.reports.getHtml().getDestination()
              dest.mkdirs()
              args.add(dest.getAbsolutePath())
+        }
+        if (t.testLogging.events.contains(TestLogEvent.STANDARD_OUT)) {
+            args.add('-o')
+        }
+        if (t.testLogging.events.contains(TestLogEvent.STANDARD_ERROR)) {
+            args.add('-e')
         }
         return args
     }
