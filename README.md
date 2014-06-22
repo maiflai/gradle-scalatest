@@ -4,6 +4,9 @@ A plugin to enable the use of scalatest in a gradle Scala project.
 
 Getting started
 ---------------
+
+This plugin requires [[Java 7]]
+
 ```groovy
 buildscript {
     repositories {

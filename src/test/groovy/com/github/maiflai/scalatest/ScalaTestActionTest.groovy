@@ -1,5 +1,7 @@
-package com.github.maiflai;
+package com.github.maiflai.scalatest
 
+import com.github.maiflai.scalatest.ScalaTestAction
+import com.github.maiflai.scalatest.ScalaTestPlugin;
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.process.internal.JavaExecAction;
