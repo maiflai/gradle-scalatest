@@ -60,7 +60,7 @@ class ScalaTestActionTest {
     public void parallelDefaultsToProcessorCount() throws Exception {
         Task test = testTask()
         int processors = Runtime.runtime.availableProcessors()
-        assertThat(commandLine(test), hasItem("-P$processors".toString()))
+        assertThat(commandLine(test), hasItem("-PS$processors".toString()))
     }
 
     @Test
@@ -68,7 +68,7 @@ class ScalaTestActionTest {
         Task test = testTask()
         int forks = Runtime.runtime.availableProcessors() + 1
         test.maxParallelForks = forks
-        assertThat(commandLine(test), hasItem("-P$forks".toString()))
+        assertThat(commandLine(test), hasItem("-PS$forks".toString()))
     }
 
 }

@@ -37,3 +37,5 @@ test {
     maxParallelForks = 1
 }
 ```
+
+Note that the minimum supported ScalaTest version is now '2.0' in order to support collection of parallel test output

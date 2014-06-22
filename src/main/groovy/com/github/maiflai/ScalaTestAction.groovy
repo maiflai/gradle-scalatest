@@ -65,9 +65,9 @@ class ScalaTestAction implements Action<Test> {
         // this represents similar behaviour to the existing JUnit test action
         args.add('-oID')
         if (t.maxParallelForks == 0) {
-            args.add('-P')
+            args.add('-PS')
         } else {
-            args.add("-P${t.maxParallelForks}".toString())
+            args.add("-PS${t.maxParallelForks}".toString())
         }
         args.add('-R')
         args.add(t.getTestClassesDir().absolutePath)
