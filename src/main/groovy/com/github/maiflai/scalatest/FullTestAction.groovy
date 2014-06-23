@@ -1,4 +1,4 @@
-package com.github.maiflai
+package com.github.maiflai.scalatest
 
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -9,17 +9,13 @@ import org.gradle.logging.ConsoleRenderer
 import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
 
-/**
- * <p>Designed to replace the normal Test Action with a new JavaExecAction
- * launching the scalatest Runner.</p>
- * <p>Classpath, JVM Args and System Properties are propagated.</p>
- * <p>Tests are launched against the testClassesDir.</p>
- */
-class ScalaTestAction implements Action<Test> {
+class FullTestAction implements Action<Test> {
 
     @Override
     void execute(Test t) {
-        def result = makeAction(t).execute()
+        def args = getReportingTestArgs(t)
+        def action = makeAction(t, args)
+        def result = action.execute()
         if (result.exitValue != 0){
             handleTestFailures(t)
         }
@@ -48,22 +44,37 @@ class ScalaTestAction implements Action<Test> {
         new ConsoleRenderer().asClickableFileUrl(report.getEntryPoint())
     }
 
+    private static Iterable<String> getReportingTestArgs(Test t) {
+        List<String> args = getBasicArgs(t)
+        // this represents similar behaviour to the existing JUnit test action
+        args.add('-oID')
+        if (t.reports.getJunitXml().isEnabled()){
+            args.add('-u')
+            args.add(t.reports.getJunitXml().getEntryPoint().getAbsolutePath())
+        }
+        if (t.reports.getHtml().isEnabled()){
+            args.add('-h')
+            def dest = t.reports.getHtml().getDestination()
+            dest.mkdirs()
+            args.add(dest.getAbsolutePath())
+        }
+        return args
+    }
 
-    static JavaExecAction makeAction(Test t) {
+    static JavaExecAction makeAction(Test t, Iterable<String> args) {
         FileResolver fileResolver = t.getServices().get(FileResolver.class);
         JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver);
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
         javaExecHandleBuilder.setClasspath(t.getClasspath())
         javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
-        javaExecHandleBuilder.setArgs(getArgs(t))
+        javaExecHandleBuilder.setArgs(args)
         javaExecHandleBuilder.setIgnoreExitValue(true)
         return javaExecHandleBuilder
     }
 
-    private static Iterable<String> getArgs(Test t) {
+    static List<String> getBasicArgs(Test t) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
-        args.add('-oID')
         if (t.maxParallelForks == 0) {
             args.add('-PS')
         } else {
@@ -71,16 +82,6 @@ class ScalaTestAction implements Action<Test> {
         }
         args.add('-R')
         args.add(t.getTestClassesDir().absolutePath)
-        if (t.reports.getJunitXml().isEnabled()){
-            args.add('-u')
-            args.add(t.reports.getJunitXml().getEntryPoint().getAbsolutePath())
-        }
-        if (t.reports.getHtml().isEnabled()){
-            args.add('-h')
-             def dest = t.reports.getHtml().getDestination()
-             dest.mkdirs()
-             args.add(dest.getAbsolutePath())
-        }
         return args
     }
 }
