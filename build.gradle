@@ -1,20 +1,12 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url "https://oss.sonatype.org/content/groups/public"}
-    }
-    dependencies {
-        classpath 'com.github.townsfolk:gradle-release:1.2'
-    }
+plugins {
+    id "com.jfrog.bintray" version "1.0"
 }
 
-apply plugin: 'idea'
-apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'maven'
 apply plugin: 'groovy'
-apply plugin: 'release'
 
-group 'com.github.maiflai'
+group = 'com.github.maiflai'
 
 dependencies {
     compile gradleApi()
@@ -41,24 +33,36 @@ signing {
     sign configurations.archives
 }
 
+bintray {
+    user = project.hasProperty('bintrayUsername') ? project.getProperty('bintrayUsername') : ''
+    key = project.hasProperty('bintrayApiKey') ? project.getProperty('bintrayApiKey') : ''
+    configurations = ['archives']
+    dryRun = false
+    publish = false
+    pkg {
+        repo = 'maven'
+        name = 'gradle-scalatest'
+        desc = 'A plugin to enable the use of scalatest in a gradle scala project.'
+        websiteUrl = 'https://github.com/maiflai/gradle-scalatest'
+        issueTrackerUrl = 'https://github.com/maiflai/gradle-scalatest/issues'
+        vcsUrl = 'https://github.com/maiflai/gradle-scalatest.git'
+        licenses = ['unlicense']
+        labels = ['gradle', 'testing', 'scala']
+        publicDownloadNumbers = true
+        version {
+            attributes = ['gradle-plugin': 'com.github.maiflai.scalatest:com.github.maiflai:gradle-scalatest']
+        }
+    }
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-
-            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
             pom.project {
-                name 'GradleScalaTest'
+                name 'gradle-scalatest'
                 description 'gradle-scalatest is a Gradle plugin for executing scalatest tests'
-                url 'http://maiflai.github.com/'
+                url 'https://github.com/maiflai/gradle-scalatest'
 
                 scm {
                     url 'scm:git:https://github.com/maiflai/gradle-scalatest.git'
