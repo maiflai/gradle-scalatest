@@ -1,4 +1,4 @@
-gradle-scct
+gradle-scalatest
 ===========
 A plugin to enable the use of scalatest in a gradle Scala project.
 
