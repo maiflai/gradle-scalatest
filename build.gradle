@@ -51,7 +51,12 @@ bintray {
         publicDownloadNumbers = true
         version {
             attributes = ['gradle-plugin': 'com.github.maiflai.scalatest:com.github.maiflai:gradle-scalatest']
+            mavenCentralSync {
+                user = project.hasProperty('sonatypeUsername') ? project.getProperty('sonatypeUsername') : ''
+                password = project.hasProperty('sonatypePassword') ? project.getProperty('sonatypePassword') : ''
+            }
         }
+
     }
 }
 
