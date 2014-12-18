@@ -1,35 +1,10 @@
 gradle-scalatest
-===========
+================
 A plugin to enable the use of scalatest in a gradle Scala project.
 
 Getting started
 ---------------
-```groovy
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.maiflai:gradle-scalatest:+'
-    }
-}
-
-apply plugin: 'com.github.maiflai.scalatest'
-
-dependencies {
-    compile 'org.scala-lang:scala-library:2.10.1'
-    testCompile 'org.scalatest:scalatest_2.10:2.0'
-    testRuntime 'org.pegdown:pegdown:1.1.0'
-}
-```
-
-For Gradle 2.1 and higher
--------------------------
-```groovy
-plugins {
-    id "com.github.maiflai.scalatest" version "+"
-}
-```
+http://plugins.gradle.org/plugin/com.github.maiflai.scalatest
 
 This replaces the existing test task actions with a scalatest implementation.
 
