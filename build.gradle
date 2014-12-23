@@ -55,6 +55,7 @@ bintray {
             mavenCentralSync {
                 user = project.hasProperty('sonatypeUsername') ? project.getProperty('sonatypeUsername') : ''
                 password = project.hasProperty('sonatypePassword') ? project.getProperty('sonatypePassword') : ''
+                close = false
             }
         }
 
