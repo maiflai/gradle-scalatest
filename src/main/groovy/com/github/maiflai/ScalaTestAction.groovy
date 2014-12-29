@@ -70,7 +70,7 @@ class ScalaTestAction implements Action<Test> {
             args.add("-PS${t.maxParallelForks}".toString())
         }
         args.add('-R')
-        args.add(t.getTestClassesDir().absolutePath)
+        args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
         if (t.reports.getJunitXml().isEnabled()){
             args.add('-u')
             args.add(t.reports.getJunitXml().getEntryPoint().getAbsolutePath())

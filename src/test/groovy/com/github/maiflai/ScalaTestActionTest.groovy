@@ -118,4 +118,12 @@ class ScalaTestActionTest {
         def args = commandLine(test)
         assertThat(args, hasPair('-l', 'jane sue'))
     }
+
+    @Test
+    public void testSpacesInTestClassesDirectoryAreEscaped() throws Exception {
+        Task test = testTask()
+        test.testClassesDir = new File("/bob rita sue")
+        def args = commandLine(test)
+        assertThat(args, hasPair('-R', '/bob\\ rita\\ sue'))
+    }
 }
