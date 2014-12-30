@@ -1,20 +1,18 @@
-package com.github.maiflai;
+package com.github.maiflai
 
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.process.internal.JavaExecAction;
 import org.gradle.testfixtures.ProjectBuilder
-import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 
-import static org.hamcrest.CoreMatchers.equalTo
 import static org.hamcrest.CoreMatchers.hasItem
 import static org.hamcrest.CoreMatchers.not
 import static org.hamcrest.core.CombinableMatcher.both
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThat
 
 class ScalaTestActionTest {
 
@@ -84,21 +82,21 @@ class ScalaTestActionTest {
         assertThat(commandLine(test), both(not(hasItem('-n'))).and(not(hasItem('-l'))))
     }
 
-    private static Matcher<List<String>> hasPair(String a, String b) {
+    private static Matcher<List<String>> hasOption(String option, String required) {
         return new TypeSafeMatcher<List<String>>() {
             @Override
             protected boolean matchesSafely(List<String> strings) {
-                def locationOfA = strings.indexOf(a)
-                if (locationOfA != -1) {
-                    return b.equals(strings.get(locationOfA + 1))
-                } else {
-                    return false
+                def optionLocations = strings.findIndexValues { it == option }
+                def optionValues = optionLocations.grep { locationOfOption ->
+                    def optionValue = strings.get((locationOfOption + 1) as Integer)
+                    required.equals(optionValue)
                 }
+                return optionValues.size() == 1
             }
 
             @Override
             void describeTo(Description description) {
-                description.appendText("a list containing $a followed by $b" )
+                description.appendText("a list containing $option followed by $required")
             }
         }
     }
@@ -108,7 +106,7 @@ class ScalaTestActionTest {
         Task test = testTask()
         test.include('bob', 'rita')
         def args = commandLine(test)
-        assertThat(args, hasPair('-n', 'bob rita'))
+        assertThat(args, both(hasOption('-n', 'bob')).and(hasOption('-n', 'rita')))
     }
 
     @Test
@@ -116,7 +114,7 @@ class ScalaTestActionTest {
         Task test = testTask()
         test.exclude('jane', 'sue')
         def args = commandLine(test)
-        assertThat(args, hasPair('-l', 'jane sue'))
+        assertThat(args, both(hasOption('-l', 'jane')).and(hasOption('-l', 'sue')))
     }
 
     @Test
@@ -124,6 +122,6 @@ class ScalaTestActionTest {
         Task test = testTask()
         test.testClassesDir = new File("/bob rita sue")
         def args = commandLine(test)
-        assertThat(args, hasPair('-R', '/bob\\ rita\\ sue'))
+        assertThat(args, hasOption('-R', '/bob\\ rita\\ sue'))
     }
 }

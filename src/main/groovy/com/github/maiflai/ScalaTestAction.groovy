@@ -81,13 +81,13 @@ class ScalaTestAction implements Action<Test> {
              dest.mkdirs()
              args.add(dest.getAbsolutePath())
         }
-        if (t.includes){
+        t.includes.each {
             args.add('-n')
-            args.add(t.includes.join(' '))
+            args.add(it)
         }
-        if (t.excludes){
+        t.excludes.each {
             args.add('-l')
-            args.add(t.excludes.join(' '))
+            args.add(it)
         }
         return args
     }
