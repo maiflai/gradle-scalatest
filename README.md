@@ -9,7 +9,10 @@ http://plugins.gradle.org/plugin/com.github.maiflai.scalatest
 This replaces the existing test task actions with a scalatest implementation.
 
 ---
-Note that the default behaviour is to use as many parallel threads as you have available processors.
+
+Parallel Testing
+----------------
+The default behaviour is to use as many parallel threads as you have available processors.
 
 `Test` tasks are modified at the time that you apply the plugin (as otherwise they would default to single-threaded).
 
@@ -21,4 +24,23 @@ test {
 }
 ```
 
-Note that the minimum supported ScalaTest version is now '2.0' in order to support collection of parallel test output
+Tags
+----
+Scalatest provides support for filtering tests by tagging. We cannot use the `PatternSet` provided by the `Test`
+task because it applies this filter to test files internally.
+
+We therefore provide an extension named `tags` to `Test` tasks.
+
+```groovy
+test {
+    tags {
+        exclude 'org.scalatest.tags.Slow'
+    }
+}
+
+task slowTest(type: Test) {
+    tags {
+        include 'org.scalatest.tags.Slow'
+    }
+}
+```

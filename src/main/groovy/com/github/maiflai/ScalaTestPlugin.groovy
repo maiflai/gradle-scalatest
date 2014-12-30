@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.scala.ScalaPlugin
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.util.PatternSet
 
 /**
  * Applies the Java & Scala Plugins
@@ -20,6 +21,7 @@ class ScalaTestPlugin implements Plugin<Project> {
             t.tasks.withType(Test) { test ->
                 test.maxParallelForks = Runtime.runtime.availableProcessors()
                 test.actions = [new ScalaTestAction()]
+                test.extensions.add(ScalaTestAction.TAGS, new PatternSet())
             }
         }
     }

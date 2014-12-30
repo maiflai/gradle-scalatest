@@ -5,6 +5,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.reporting.DirectoryReport
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.util.PatternSet
 import org.gradle.logging.ConsoleRenderer
 import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
@@ -16,6 +17,8 @@ import org.gradle.process.internal.JavaExecAction
  * <p>Tests are launched against the testClassesDir.</p>
  */
 class ScalaTestAction implements Action<Test> {
+
+    static String TAGS = 'tags'
 
     @Override
     void execute(Test t) {
@@ -81,13 +84,16 @@ class ScalaTestAction implements Action<Test> {
              dest.mkdirs()
              args.add(dest.getAbsolutePath())
         }
-        t.includes.each {
-            args.add('-n')
-            args.add(it)
-        }
-        t.excludes.each {
-            args.add('-l')
-            args.add(it)
+        def tags = t.extensions.findByName(TAGS) as PatternSet
+        if (tags) {
+            tags.includes.each {
+                args.add('-n')
+                args.add(it)
+            }
+            tags.excludes.each {
+                args.add('-l')
+                args.add(it)
+            }
         }
         return args
     }

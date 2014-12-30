@@ -104,7 +104,7 @@ class ScalaTestActionTest {
     @Test
     public void includesAreAddedAsTags() throws Exception {
         Task test = testTask()
-        test.include('bob', 'rita')
+        test.tags.include('bob', 'rita')
         def args = commandLine(test)
         assertThat(args, both(hasOption('-n', 'bob')).and(hasOption('-n', 'rita')))
     }
@@ -112,7 +112,7 @@ class ScalaTestActionTest {
     @Test
     public void excludesAreAddedAsTags() throws Exception {
         Task test = testTask()
-        test.exclude('jane', 'sue')
+        test.tags.exclude('jane', 'sue')
         def args = commandLine(test)
         assertThat(args, both(hasOption('-l', 'jane')).and(hasOption('-l', 'sue')))
     }
