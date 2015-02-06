@@ -8,6 +8,15 @@ http://plugins.gradle.org/plugin/com.github.maiflai.scalatest
 
 This replaces the existing test task actions with a scalatest implementation.
 
+In addition to your `testCompile` dependency on scalatest, you also require a `testRuntime` dependency on pegdown in
+order to create the HTML report.
+
+```groovy
+dependencies {
+  testCompile 'org.scalatest:scalatest_2.11:2+'
+  testRuntime 'org.pegdown:pegdown:1.1.0'
+}
+```
 ---
 
 Parallel Testing
