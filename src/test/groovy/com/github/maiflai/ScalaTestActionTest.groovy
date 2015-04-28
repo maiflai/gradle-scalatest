@@ -32,6 +32,20 @@ class ScalaTestActionTest {
     }
 
     @Test
+    public void colorOutputIsDisabled() {
+        Task test = testTask()
+        test.getProject().getGradle().startParameter.setColorOutput(false)
+        assertThat(commandLine(test), hasItem("-oIDW".toString()))
+    }
+
+    @Test
+    public void colorOutputIsEnabled() {
+        Task test = testTask()
+        test.getProject().getGradle().startParameter.setColorOutput(true)
+        assertThat(commandLine(test), hasItem("-oID".toString()))
+    }
+
+    @Test
     public void maxHeapSizeIsAdded() throws Exception {
         Task test = testTask()
         String size = '123m'

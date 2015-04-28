@@ -66,7 +66,11 @@ class ScalaTestAction implements Action<Test> {
     private static Iterable<String> getArgs(Test t) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
-        args.add('-oID')
+        if (t.getProject().getGradle().getStartParameter().isColorOutput()) {
+            args.add('-oID')
+        } else {
+            args.add('-oIDW')
+        }
         if (t.maxParallelForks == 0) {
             args.add('-PS')
         } else {
