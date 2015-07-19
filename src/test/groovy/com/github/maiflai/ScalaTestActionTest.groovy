@@ -132,10 +132,10 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void testSpacesInTestClassesDirectoryAreEscaped() throws Exception {
+    public void filtersAreTranslatedToZ() throws Exception {
         Task test = testTask()
-        test.testClassesDir = new File("/bob rita sue")
+        test.filter.setIncludePatterns('popped', 'weasel')
         def args = commandLine(test)
-        assertThat(args, hasOption('-R', '/bob\\ rita\\ sue'))
+        assertThat(args, both(hasOption('-z', 'popped')).and(hasOption('-z', 'weasel')))
     }
 }

@@ -78,6 +78,10 @@ class ScalaTestAction implements Action<Test> {
         }
         args.add('-R')
         args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
+        t.filter.includePatterns.each {
+            args.add('-z')
+            args.add(it)
+        }
         if (t.reports.getJunitXml().isEnabled()){
             args.add('-u')
             args.add(t.reports.getJunitXml().getEntryPoint().getAbsolutePath())

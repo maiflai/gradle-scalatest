@@ -53,3 +53,22 @@ task slowTest(type: Test) {
     }
 }
 ```
+
+Filtering
+---------
+Scalatest provides a simplified wildcard syntax for selecting tests. 
+We directly map [Gradle test filters](https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/testing/TestFilter.html) to this form.
+
+```groovy
+test {
+    filter {
+        includeTestsMatching 'MyTest'
+    }
+}
+```
+
+This can also be supplied on the command line:
+
+```
+./gradlew test --tests MyTest
+```
