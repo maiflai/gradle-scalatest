@@ -9,6 +9,7 @@ import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 
+import static org.hamcrest.CoreMatchers.equalTo
 import static org.hamcrest.CoreMatchers.hasItem
 import static org.hamcrest.CoreMatchers.not
 import static org.hamcrest.core.CombinableMatcher.both
@@ -137,5 +138,34 @@ class ScalaTestActionTest {
         test.filter.setIncludePatterns('popped', 'weasel')
         def args = commandLine(test)
         assertThat(args, both(hasOption('-z', 'popped')).and(hasOption('-z', 'weasel')))
+    }
+
+    private static void checkSuiteTranslation(String message, Closure<Task> task, List<String> suites) {
+        Task test = testTask()
+        test.configure(task)
+        def args = commandLine(test)
+        suites.each {
+            assertThat(message, args, hasOption('-s', it))
+        }
+    }
+
+    @Test
+    public void suiteIsTranslatedToS() throws Exception {
+        checkSuiteTranslation('simple suite', { it.suite 'hello.World' }, ['hello.World'])
+        checkSuiteTranslation('multiple calls', { it.suite 'a'; it.suite 'b' }, ['a', 'b'])
+    }
+
+    @Test
+    public void suitesAreTranslatedToS() throws Exception {
+        checkSuiteTranslation('list of suites', { it.suites 'a', 'b' }, ['a', 'b'])
+    }
+
+    @Test
+    public void distinctSuitesAreRun() throws Exception {
+        Task test = testTask()
+        test.suites 'a', 'a'
+        def args = commandLine(test)
+        def callsToS = args.findAll { it.equals('-s') }
+        assertThat(callsToS.size(), equalTo(1))
     }
 }

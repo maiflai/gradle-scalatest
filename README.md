@@ -52,6 +52,15 @@ task slowTest(type: Test) {
         include 'org.scalatest.tags.Slow'
     }
 }
+
+Suites
+------
+Suites are supported with another extension to the `Test` task.
+```groovy
+task userStories(type: Test) {
+    suite 'com.example.UserStories'
+    // suites 'a.Spec', 'b.Spec', 'etc'
+}
 ```
 
 Filtering

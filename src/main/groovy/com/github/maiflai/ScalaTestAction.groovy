@@ -19,6 +19,7 @@ import org.gradle.process.internal.JavaExecAction
 class ScalaTestAction implements Action<Test> {
 
     static String TAGS = 'tags'
+    static String SUITES = '_suites'
 
     @Override
     void execute(Test t) {
@@ -102,6 +103,11 @@ class ScalaTestAction implements Action<Test> {
                 args.add('-l')
                 args.add(it)
             }
+        }
+        def suites = t.extensions.findByName(SUITES) as List<String>
+        suites?.toSet()?.each {
+            args.add('-s')
+            args.add(it)
         }
         return args
     }
