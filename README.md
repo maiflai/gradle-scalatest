@@ -52,6 +52,7 @@ task slowTest(type: Test) {
         include 'org.scalatest.tags.Slow'
     }
 }
+```
 
 Suites
 ------
