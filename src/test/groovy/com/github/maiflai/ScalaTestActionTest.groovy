@@ -36,14 +36,14 @@ class ScalaTestActionTest {
     public void colorOutputIsDisabled() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setColorOutput(false)
-        assertThat(commandLine(test), hasItem("-oIDW".toString()))
+        assertThat(commandLine(test), hasItem("-oDW".toString()))
     }
 
     @Test
     public void colorOutputIsEnabled() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setColorOutput(true)
-        assertThat(commandLine(test), hasItem("-oID".toString()))
+        assertThat(commandLine(test), hasItem("-oD".toString()))
     }
 
     @Test
