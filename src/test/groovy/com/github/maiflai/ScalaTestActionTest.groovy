@@ -32,6 +32,18 @@ class ScalaTestActionTest {
         action.getCommandLine()
     }
 
+    private static Map<String, Object> environment(org.gradle.api.tasks.testing.Test task) {
+        JavaExecAction action = ScalaTestAction.makeAction(task)
+        action.getEnvironment()
+    }
+
+    @Test
+    public void environmentVariableIsCopied() {
+        Task test = testTask()
+        test.environment.put('a', 'b')
+        assertThat(environment(test).get('a') as String, equalTo('b'))
+    }
+
     @Test
     public void colorOutputIsDisabled() {
         Task test = testTask()
