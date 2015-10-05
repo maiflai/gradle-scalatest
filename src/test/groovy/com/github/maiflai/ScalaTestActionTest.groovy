@@ -2,17 +2,18 @@ package com.github.maiflai
 
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.process.internal.JavaExecAction;
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.process.internal.JavaExecAction
 import org.gradle.testfixtures.ProjectBuilder
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 
-import static org.hamcrest.CoreMatchers.equalTo
-import static org.hamcrest.CoreMatchers.hasItem
-import static org.hamcrest.CoreMatchers.not
+import static com.github.maiflai.ScalaTestAction.other
+import static org.hamcrest.CoreMatchers.*
 import static org.hamcrest.core.CombinableMatcher.both
+import static org.hamcrest.core.Is.is
 import static org.junit.Assert.assertThat
 
 class ScalaTestActionTest {
@@ -32,6 +33,21 @@ class ScalaTestActionTest {
         action.getCommandLine()
     }
 
+    private static Matcher<List<String>> hasOutput(String required) {
+        return new TypeSafeMatcher<List<String>>() {
+            @Override
+            protected boolean matchesSafely(List<String> strings) {
+                def output = strings.find { it.startsWith('-o') }
+                return output.contains(required)
+            }
+
+            @Override
+            void describeTo(Description description) {
+                description.appendText("a list containing -o[...$required...]")
+            }
+        }
+    }
+
     @Test
     public void colorOutputIsDisabled() {
         Task test = testTask()
@@ -44,6 +60,13 @@ class ScalaTestActionTest {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setColorOutput(true)
         assertThat(commandLine(test), hasItem("-oD".toString()))
+    }
+
+    @Test
+    public void testDefaultLogging() throws Exception {
+        Task test = testTask()
+        assertThat(test.testLogging.events, is(TestLogEvent.values() as Set))
+        assertThat(commandLine(test), hasOutput('oD'))
     }
 
     @Test
@@ -167,5 +190,22 @@ class ScalaTestActionTest {
         def args = commandLine(test)
         def callsToS = args.findAll { it.equals('-s') }
         assertThat(callsToS.size(), equalTo(1))
+    }
+
+    @Test
+    public void testKnockout() throws Exception {
+        assertThat(other([TestLogEvent.FAILED] as Set),
+                is([TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.SKIPPED] as Set))
+
+        assertThat(other([TestLogEvent.PASSED, TestLogEvent.FAILED] as Set),
+                is([TestLogEvent.STARTED, TestLogEvent.SKIPPED] as Set))
+    }
+
+    @Test
+    public void failedOnlyReporting() throws Exception {
+        Task test = testTask()
+        test.testLogging.events = [TestLogEvent.FAILED]
+        assertThat(commandLine(test), hasOutput('oCEFHLMNOPQRX'))
+
     }
 }

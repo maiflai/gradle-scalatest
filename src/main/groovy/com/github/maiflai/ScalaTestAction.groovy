@@ -5,6 +5,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.reporting.DirectoryReport
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.logging.ConsoleRenderer
 import org.gradle.process.internal.DefaultJavaExecAction
@@ -64,14 +65,57 @@ class ScalaTestAction implements Action<Test> {
         return javaExecHandleBuilder
     }
 
+    static Set<TestLogEvent> other(Set<TestLogEvent> required) {
+        def all = TestLogEvent.values() as Set
+        (required + all) - required.intersect(all)
+    }
+
+    static String drop(TestLogEvent event, int granularity) {
+        switch (event) {
+            case TestLogEvent.STARTED: 'NHP' // test and suite and scope
+                break;
+            case TestLogEvent.PASSED: 'CLQ' // test and suite and scope
+                break;
+            case TestLogEvent.SKIPPED: 'XER' // ignored and pending and scope
+                break;
+            case TestLogEvent.STANDARD_OUT:
+            case TestLogEvent.STANDARD_ERROR: 'OM' // infoprovided, markupprovided
+                break;
+        }
+    }
+
+    static String dropped(Test t) {
+        other(t.testLogging.events).collect { drop(it, t.testLogging.displayGranularity) }.join('')
+    }
+
+    static String color(Test t) {
+        if (!t.getProject().getGradle().getStartParameter().isColorOutput()) {
+            'W'
+        } else {
+            ''
+        }
+    }
+
+    static String exceptions(Test t) {
+        if (t.testLogging.showExceptions) {
+            if (t.testLogging.showCauses) {
+                'F'
+            } else {
+                'S'
+            }
+        } else {
+            ''
+        }
+    }
+
+    static String reporting(Test t) {
+        '-o' + ((dropped(t) + color(t) + exceptions(t)) as List).unique().sort().join('')
+    }
+
     private static Iterable<String> getArgs(Test t) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
-        if (t.getProject().getGradle().getStartParameter().isColorOutput()) {
-            args.add('-oD')
-        } else {
-            args.add('-oDW')
-        }
+        args.add(reporting(t))
         if (t.maxParallelForks == 0) {
             args.add('-PS')
         } else {
