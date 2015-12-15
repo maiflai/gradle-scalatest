@@ -21,7 +21,10 @@ class ScalaTestPlugin implements Plugin<Project> {
             t.tasks.withType(Test) { test ->
                 test.maxParallelForks = Runtime.runtime.availableProcessors()
                 //noinspection GroovyAssignabilityCheck
-                test.actions = [new ScalaTestAction()]
+                test.actions = [
+                        new JacocoTestAction(),
+                        new ScalaTestAction()
+                ]
                 test.extensions.add(ScalaTestAction.TAGS, new PatternSet())
                 List<String> suites = []
                 test.extensions.add(ScalaTestAction.SUITES, suites)

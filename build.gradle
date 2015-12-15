@@ -13,6 +13,14 @@ ext {
     sourceUrl = 'https://github.com/maiflai/gradle-scalatest.git'
 }
 
+version = {
+    if (project.hasProperty('version')) {
+        return project.getProperty('version')
+    } else {
+        return '0.0.1-SNAPSHOT'
+    }
+}
+
 targetCompatibility = '1.6'
 
 dependencies {
@@ -29,6 +37,8 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
 }
+
+test.dependsOn(jar)
 
 artifacts {
     archives jar
