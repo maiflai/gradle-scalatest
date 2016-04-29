@@ -111,7 +111,7 @@ class ScalaTestAction implements Action<Test> {
             args.add('-s')
             args.add(it)
         }
-        def config = t.extensions.findByName(CONFIG) as Map<String, String>
+        def config = t.extensions.findByName(CONFIG) as Map<String, ?>
         config?.entrySet()?.each { entry ->
             args.add("-D${entry.key}=${entry.value}")
         }
