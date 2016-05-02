@@ -180,4 +180,28 @@ class ScalaTestActionTest {
         def callsToS = args.findAll { it.equals('-s') }
         assertThat(callsToS.size(), equalTo(1))
     }
+
+    @Test
+    public void configString() throws Exception {
+        Task test = testTask()
+        test.config 'a', 'b'
+        def args = commandLine(test)
+        assertThat(args, hasItem('-Da=b'))
+    }
+
+    @Test
+    public void configNumber() throws Exception {
+        Task test = testTask()
+        test.config 'a', 1
+        def args = commandLine(test)
+        assertThat(args, hasItem('-Da=1'))
+    }
+
+    @Test
+    public void configMap() throws Exception {
+        Task test = testTask()
+        test.configMap([a:'b', c:1])
+        def args = commandLine(test)
+        assertThat(args, both(hasItem('-Da=b')).and(hasItem("-Dc=1")))
+    }
 }

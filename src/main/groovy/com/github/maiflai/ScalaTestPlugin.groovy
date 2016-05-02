@@ -30,6 +30,10 @@ class ScalaTestPlugin implements Plugin<Project> {
                 test.extensions.add(ScalaTestAction.SUITES, suites)
                 test.extensions.add("suite", { String name -> suites.add(name) } )
                 test.extensions.add("suites", { String... name -> suites.addAll(name) } )
+                Map<String, ?> config = [:]
+                test.extensions.add(ScalaTestAction.CONFIG, config)
+                test.extensions.add("config", { String name, value -> config.put(name, value) } )
+                test.extensions.add("configMap", { Map<String, ?> c -> config.putAll(c) } )
                 if (test.name != JavaPlugin.TEST_TASK_NAME) {
                     test.reports.html.destination = project.reporting.file(test.name)
                 }

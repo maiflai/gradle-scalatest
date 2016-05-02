@@ -20,6 +20,7 @@ class ScalaTestAction implements Action<Test> {
 
     static String TAGS = 'tags'
     static String SUITES = '_suites'
+    static String CONFIG = '_config'
 
     @Override
     void execute(Test t) {
@@ -109,6 +110,10 @@ class ScalaTestAction implements Action<Test> {
         suites?.toSet()?.each {
             args.add('-s')
             args.add(it)
+        }
+        def config = t.extensions.findByName(CONFIG) as Map<String, ?>
+        config?.entrySet()?.each { entry ->
+            args.add("-D${entry.key}=${entry.value}")
         }
         return args
     }
