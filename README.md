@@ -82,3 +82,22 @@ This can also be supplied on the command line:
 ```
 ./gradlew test --tests MyTest
 ```
+
+ConfigMap
+---------
+Additional configuration can be passed to Scalatest using the [config map](http://www.scalatest.org/user_guide/using_the_runner#configMapSection)
+
+```groovy 
+test {
+    config 'db.name', 'testdb'
+}
+```
+
+```groovy 
+test {
+    configMap([
+        'db.name': 'testdb'
+        'server': '192.168.1.188'
+        ])
+}
+```

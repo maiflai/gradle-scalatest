@@ -22,12 +22,20 @@ class ScalaTestPlugin implements Plugin<Project> {
             t.tasks.withType(Test) { test ->
                 test.maxParallelForks = Runtime.runtime.availableProcessors()
                 //noinspection GroovyAssignabilityCheck
-                test.actions = [new ScalaTestAction()]
+                test.actions = [
+                        new JacocoTestAction(),
+                        new ScalaTestAction()
+                ]
+                test.testLogging.showCauses = false
                 test.extensions.add(ScalaTestAction.TAGS, new PatternSet())
                 List<String> suites = []
                 test.extensions.add(ScalaTestAction.SUITES, suites)
                 test.extensions.add("suite", { String name -> suites.add(name) } )
                 test.extensions.add("suites", { String... name -> suites.addAll(name) } )
+                Map<String, ?> config = [:]
+                test.extensions.add(ScalaTestAction.CONFIG, config)
+                test.extensions.add("config", { String name, value -> config.put(name, value) } )
+                test.extensions.add("configMap", { Map<String, ?> c -> config.putAll(c) } )
                 if (test.name != JavaPlugin.TEST_TASK_NAME) {
                     test.reports.html.destination = project.reporting.file(test.name)
                 }

@@ -21,6 +21,7 @@ class ScalaTestAction implements Action<Test> {
 
     static String TAGS = 'tags'
     static String SUITES = '_suites'
+    static String CONFIG = '_config'
 
     @Override
     void execute(Test t) {
@@ -58,6 +59,7 @@ class ScalaTestAction implements Action<Test> {
         FileResolver fileResolver = t.getServices().get(FileResolver.class);
         JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver);
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
+        javaExecHandleBuilder.setEnvironment(t.getEnvironment())
         javaExecHandleBuilder.setClasspath(t.getClasspath())
         javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
         javaExecHandleBuilder.setArgs(getArgs(t))
@@ -77,6 +79,8 @@ class ScalaTestAction implements Action<Test> {
             case TestLogEvent.PASSED: 'CLQ' // test and suite and scope
                 break;
             case TestLogEvent.SKIPPED: 'XER' // ignored and pending and scope
+                break;
+            case TestLogEvent.FAILED: ''
                 break;
             case TestLogEvent.STANDARD_OUT:
             case TestLogEvent.STANDARD_ERROR: 'OM' // infoprovided, markupprovided
@@ -108,8 +112,10 @@ class ScalaTestAction implements Action<Test> {
         }
     }
 
+    static String durations = 'D'
+
     static String reporting(Test t) {
-        '-o' + ((dropped(t) + color(t) + exceptions(t)) as List).unique().sort().join('')
+        '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
     }
 
     private static Iterable<String> getArgs(Test t) {
@@ -152,6 +158,10 @@ class ScalaTestAction implements Action<Test> {
         suites?.toSet()?.each {
             args.add('-s')
             args.add(it)
+        }
+        def config = t.extensions.findByName(CONFIG) as Map<String, ?>
+        config?.entrySet()?.each { entry ->
+            args.add("-D${entry.key}=${entry.value}")
         }
         return args
     }

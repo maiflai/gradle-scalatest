@@ -5,6 +5,7 @@ import org.gradle.api.Task
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.process.internal.JavaExecAction
 import org.gradle.testfixtures.ProjectBuilder
+import org.hamcrest.CoreMatchers
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -48,18 +49,30 @@ class ScalaTestActionTest {
         }
     }
 
+    private static Map<String, Object> environment(org.gradle.api.tasks.testing.Test task) {
+        JavaExecAction action = ScalaTestAction.makeAction(task)
+        action.getEnvironment()
+    }
+
+    @Test
+    public void environmentVariableIsCopied() {
+        Task test = testTask()
+        test.environment.put('a', 'b')
+        assertThat(environment(test).get('a') as String, equalTo('b'))
+    }
+
     @Test
     public void colorOutputIsDisabled() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setColorOutput(false)
-        assertThat(commandLine(test), hasItem("-oDW".toString()))
+        assertThat(commandLine(test), hasItem("-oDSW".toString()))
     }
 
     @Test
     public void colorOutputIsEnabled() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setColorOutput(true)
-        assertThat(commandLine(test), hasItem("-oD".toString()))
+        assertThat(commandLine(test), hasItem("-oDS".toString()))
     }
 
     @Test
@@ -195,17 +208,41 @@ class ScalaTestActionTest {
     @Test
     public void testKnockout() throws Exception {
         assertThat(other([TestLogEvent.FAILED] as Set),
-                is([TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.SKIPPED] as Set))
+                not(hasItem(TestLogEvent.FAILED)))
 
         assertThat(other([TestLogEvent.PASSED, TestLogEvent.FAILED] as Set),
-                is([TestLogEvent.STARTED, TestLogEvent.SKIPPED] as Set))
+                both(not(hasItem(TestLogEvent.PASSED))).and(not(hasItem(TestLogEvent.PASSED))))
     }
 
     @Test
     public void failedOnlyReporting() throws Exception {
         Task test = testTask()
         test.testLogging.events = [TestLogEvent.FAILED]
-        assertThat(commandLine(test), hasOutput('oCEFHLMNOPQRX'))
+        assertThat(commandLine(test), hasOutput('oCDEHLMNOPQRSX'))
 
+    }
+
+    @Test
+    public void configString() throws Exception {
+        Task test = testTask()
+        test.config 'a', 'b'
+        def args = commandLine(test)
+        assertThat(args, hasItem('-Da=b'))
+    }
+
+    @Test
+    public void configNumber() throws Exception {
+        Task test = testTask()
+        test.config 'a', 1
+        def args = commandLine(test)
+        assertThat(args, hasItem('-Da=1'))
+    }
+
+    @Test
+    public void configMap() throws Exception {
+        Task test = testTask()
+        test.configMap([a:'b', c:1])
+        def args = commandLine(test)
+        assertThat(args, both(hasItem('-Da=b')).and(hasItem("-Dc=1")))
     }
 }

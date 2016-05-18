@@ -1,7 +1,18 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.2"
+    }
+}
 plugins {
     id "com.jfrog.bintray" version "1.0"
 }
 
+apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'groovy'
@@ -12,6 +23,12 @@ ext {
     websiteUrl = 'https://github.com/maiflai/gradle-scalatest'
     sourceUrl = 'https://github.com/maiflai/gradle-scalatest.git'
 }
+
+if (project.version == 'unspecified') {
+    version = '0.1-SNAPSHOT'
+}
+
+task showVersion() << { println(project.version) }
 
 targetCompatibility = '1.6'
 
@@ -30,6 +47,8 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
+test.dependsOn(jar)
+
 artifacts {
     archives jar
     archives groovydocJar
@@ -45,6 +64,20 @@ def propOrDefault(String property) {
         return project.getProperty(property)
     } else {
         return ''
+    }
+}
+
+pluginBundle {
+    website = project.websiteUrl
+    vcsUrl = project.sourceUrl
+    description = project.description
+    tags = ['testing', 'scala', 'scalatest']
+
+    plugins {
+        scalatestPlugin {
+            id = 'com.github.maiflai.scalatest'
+            displayName = 'Gradle ScalaTest plugin'
+        }
     }
 }
 
