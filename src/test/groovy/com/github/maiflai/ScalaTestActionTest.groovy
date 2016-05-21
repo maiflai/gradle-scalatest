@@ -38,6 +38,14 @@ class ScalaTestActionTest {
     }
 
     @Test
+    public void workingDirectoryIsHonoured() throws Exception {
+        Task test = testTask()
+        test.workingDir = '/tmp'
+        JavaExecAction action = ScalaTestAction.makeAction(test)
+        assertThat(action.workingDir, equalTo(new File('/tmp')))
+    }
+
+    @Test
     public void environmentVariableIsCopied() {
         Task test = testTask()
         test.environment.put('a', 'b')
@@ -200,7 +208,7 @@ class ScalaTestActionTest {
     @Test
     public void configMap() throws Exception {
         Task test = testTask()
-        test.configMap([a:'b', c:1])
+        test.configMap([a: 'b', c: 1])
         def args = commandLine(test)
         assertThat(args, both(hasItem('-Da=b')).and(hasItem("-Dc=1")))
     }

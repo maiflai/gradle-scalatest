@@ -57,8 +57,8 @@ class ScalaTestAction implements Action<Test> {
     static JavaExecAction makeAction(Test t) {
         FileResolver fileResolver = t.getServices().get(FileResolver.class);
         JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver);
+        t.copyTo(javaExecHandleBuilder)
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
-        javaExecHandleBuilder.setEnvironment(t.getEnvironment())
         javaExecHandleBuilder.setClasspath(t.getClasspath())
         javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
         javaExecHandleBuilder.setArgs(getArgs(t))
