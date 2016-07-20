@@ -6,7 +6,7 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.reporting.DirectoryReport
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.util.PatternSet
-import org.gradle.logging.ConsoleRenderer
+import org.gradle.internal.UncheckedException
 import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
 
@@ -50,7 +50,11 @@ class ScalaTestAction implements Action<Test> {
     }
 
     private static String url(DirectoryReport report) {
-        new ConsoleRenderer().asClickableFileUrl(report.getEntryPoint())
+        try {
+            return new URI("file", "", report.getEntryPoint().toURI().getPath(), null, null).toString();
+        } catch (URISyntaxException e) {
+            throw UncheckedException.throwAsUncheckedException(e);
+        }
     }
 
 

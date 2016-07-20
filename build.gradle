@@ -32,9 +32,14 @@ task showVersion() << { println(project.version) }
 
 targetCompatibility = '1.6'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
+    testCompile 'junit:junit:4.12'
 }
 
 task groovydocJar(type: Jar, dependsOn: groovydoc) {
