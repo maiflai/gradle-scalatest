@@ -2,10 +2,10 @@ package com.github.maiflai
 
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.process.internal.JavaExecAction
 import org.gradle.testfixtures.ProjectBuilder
-import org.hamcrest.CoreMatchers
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -80,6 +80,20 @@ class ScalaTestActionTest {
         Task test = testTask()
         assertThat(test.testLogging.events, is(TestLogEvent.values() as Set))
         assertThat(commandLine(test), hasOutput('oD'))
+    }
+
+    @Test
+    public void fullStackTraces() throws Exception {
+        Task test = testTask()
+        test.testLogging.exceptionFormat = TestExceptionFormat.FULL
+        assertThat(commandLine(test), hasOutput('oDF'))
+    }
+
+    @Test
+    public void shortStackTraces() throws Exception {
+        Task test = testTask()
+        test.testLogging.exceptionFormat = TestExceptionFormat.SHORT
+        assertThat(commandLine(test), hasOutput('oDS'))
     }
 
     @Test

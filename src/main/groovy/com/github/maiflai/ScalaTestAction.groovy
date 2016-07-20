@@ -5,6 +5,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.reporting.DirectoryReport
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.logging.ConsoleRenderer
@@ -102,14 +103,14 @@ class ScalaTestAction implements Action<Test> {
 
     static String exceptions(Test t) {
         if (t.testLogging.showExceptions) {
-            if (t.testLogging.showCauses) {
-                'F'
-            } else {
-                'S'
+            switch (t.testLogging.exceptionFormat) {
+                case TestExceptionFormat.FULL:
+                    return 'F'
+                case TestExceptionFormat.SHORT:
+                    return 'S'
             }
-        } else {
-            ''
         }
+        return ''
     }
 
     static String durations = 'D'
