@@ -8,7 +8,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
-import org.gradle.logging.ConsoleRenderer
+import org.gradle.internal.UncheckedException
 import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
 
@@ -52,15 +52,19 @@ class ScalaTestAction implements Action<Test> {
     }
 
     private static String url(DirectoryReport report) {
-        new ConsoleRenderer().asClickableFileUrl(report.getEntryPoint())
+        try {
+            return new URI("file", "", report.getEntryPoint().toURI().getPath(), null, null).toString();
+        } catch (URISyntaxException e) {
+            throw UncheckedException.throwAsUncheckedException(e);
+        }
     }
 
 
     static JavaExecAction makeAction(Test t) {
         FileResolver fileResolver = t.getServices().get(FileResolver.class);
         JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver);
+        t.copyTo(javaExecHandleBuilder)
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
-        javaExecHandleBuilder.setEnvironment(t.getEnvironment())
         javaExecHandleBuilder.setClasspath(t.getClasspath())
         javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
         javaExecHandleBuilder.setArgs(getArgs(t))
