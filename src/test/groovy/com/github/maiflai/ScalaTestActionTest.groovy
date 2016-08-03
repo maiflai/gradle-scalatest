@@ -2,6 +2,7 @@ package com.github.maiflai
 
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.logging.configuration.ConsoleOutput
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.process.internal.JavaExecAction
@@ -70,16 +71,23 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void colorOutputIsDisabled() {
+    public void plainOutputIsWithoutColour() {
         Task test = testTask()
-        test.getProject().getGradle().startParameter.setColorOutput(false)
+        test.getProject().getGradle().startParameter.setConsoleOutput(ConsoleOutput.Plain)
         assertThat(commandLine(test), hasItem("-oDSW".toString()))
     }
 
     @Test
-    public void colorOutputIsEnabled() {
+    public void richOutput() {
         Task test = testTask()
-        test.getProject().getGradle().startParameter.setColorOutput(true)
+        test.getProject().getGradle().startParameter.setConsoleOutput(ConsoleOutput.Rich)
+        assertThat(commandLine(test), hasItem("-oDS".toString()))
+    }
+
+    @Test
+    public void autoOutputRetainsColour() {
+        Task test = testTask()
+        test.getProject().getGradle().startParameter.setConsoleOutput(ConsoleOutput.Rich)
         assertThat(commandLine(test), hasItem("-oDS".toString()))
     }
 

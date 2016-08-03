@@ -3,6 +3,7 @@ package com.github.maiflai
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.logging.configuration.ConsoleOutput
 import org.gradle.api.reporting.DirectoryReport
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -98,7 +99,7 @@ class ScalaTestAction implements Action<Test> {
     }
 
     static String color(Test t) {
-        if (!t.getProject().getGradle().getStartParameter().isColorOutput()) {
+        if (t.getProject().getGradle().getStartParameter().getConsoleOutput() == ConsoleOutput.Plain) {
             'W'
         } else {
             ''
