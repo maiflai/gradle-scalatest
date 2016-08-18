@@ -15,7 +15,7 @@ class JacocoTestActionIntegrationTest {
         def launcher = setupBuild(new File('src/test/examples/jacoco'))
         launcher.forTasks('clean', 'test', 'jacoco').run()
         assertThat(new File('src/test/examples/jacoco/build/reports/jacoco/test/html'), isReport)
-        assertThat(new File('src/test/examples/jacoco/build/reports/tests'), isReport)
+        assertThat(new File('src/test/examples/jacoco/build/reports/tests/test'), isReport)
     }
 
     protected BuildLauncher setupBuild(File projectRoot) {
