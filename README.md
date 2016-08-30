@@ -13,8 +13,8 @@ order to create the HTML report.
 
 ```groovy
 dependencies {
-  testCompile 'org.scalatest:scalatest_2.11:2+'
-  testRuntime 'org.pegdown:pegdown:1.1.0'
+  testCompile 'org.scalatest:scalatest_2.11:3.0.0'
+  testRuntime 'org.pegdown:pegdown:1.6.0'
 }
 ```
 ---

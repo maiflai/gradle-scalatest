@@ -18,6 +18,6 @@ repositories {
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.11.6'
-    testCompile 'org.scalatest:scalatest_2.11:2.2.5'
-    testRuntime 'org.pegdown:pegdown:1.1.0'
+    testCompile 'org.scalatest:scalatest_2.11:3.0.0'
+    testRuntime 'org.pegdown:pegdown:1.6.0'
 }
