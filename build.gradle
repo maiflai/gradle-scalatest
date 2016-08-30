@@ -24,12 +24,6 @@ ext {
     sourceUrl = 'https://github.com/maiflai/gradle-scalatest.git'
 }
 
-if (project.version == 'unspecified') {
-    version = '0.1-SNAPSHOT'
-}
-
-task showVersion() << { println(project.version) }
-
 targetCompatibility = '1.6'
 
 repositories {
@@ -63,6 +57,15 @@ artifacts {
 signing {
     sign configurations.archives
 }
+
+if (project.version == 'unspecified') {
+    version = '0.1-SNAPSHOT'
+    project.signArchives.enabled = false
+}
+
+task showVersion() << { println(project.version) }
+
+
 
 def propOrDefault(String property) {
     if (project.hasProperty(property)) {
