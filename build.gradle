@@ -63,7 +63,7 @@ if (project.version == 'unspecified') {
     project.signArchives.enabled = false
 }
 
-task showVersion() << { println(project.version) }
+task showVersion() { doLast { println(project.version) } }
 
 
 
