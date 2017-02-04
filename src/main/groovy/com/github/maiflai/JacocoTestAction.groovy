@@ -10,7 +10,10 @@ class JacocoTestAction implements Action<Test> {
         // java.lang.InternalError: Malformed class name when finding by type
         def jacoco = task.extensions.findByName('jacoco')
         if (jacoco && jacoco.enabled) {
-            task.jvmArgs jacoco.getAsJvmArg()
+            def jacocoJavaAgent = jacoco.getAsJvmArg()
+            if (!task.allJvmArgs.contains(jacocoJavaAgent)) {
+                task.jvmArgs jacocoJavaAgent
+            }
         }
     }
 
