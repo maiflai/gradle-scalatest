@@ -66,7 +66,7 @@ class ScalaTestTaskPluginFunctionalTest extends Specification {
         and:
         buildFile << """
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
