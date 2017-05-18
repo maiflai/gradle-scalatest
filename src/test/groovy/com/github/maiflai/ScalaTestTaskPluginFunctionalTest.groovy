@@ -10,24 +10,24 @@ import static org.hamcrest.MatcherAssert.assertThat
  */
 class ScalaTestTaskPluginFunctionalTest {
     @Test
-    void testTestngAndScalatest() {
-        File projectDir = new File('src/test/examples/testngAndScalatest')
+    void testJunitAndScalatest() {
+        File projectDir = new File('src/test/examples/twoTestFrameworks')
         def launcher = SetupBuild.setupBuild(projectDir)
         launcher.forTasks('clean', 'check').run()
 
         File testResultsDir = new File(projectDir, 'build/test-results')
         File scalatestsResultsDir = new File(testResultsDir, 'scalatest')
         File scalatestTestFile = new File(scalatestsResultsDir, 'TEST-ScalatestTest.xml')
-        File testngResultsDir = new File(testResultsDir, 'test')
-        File testngTestFile = new File(testngResultsDir, 'TEST-TestngTest.xml')
+        File junitResultsDir = new File(testResultsDir, 'test')
+        File junitTestFile = new File(junitResultsDir, 'TEST-JunitTest.xml')
 
         assertThat(scalatestTestFile.path + " doesn't exist", scalatestTestFile.exists())
-        assertThat(testngTestFile.path + " doesn't exist", testngTestFile.exists())
+        assertThat(junitTestFile.path + " doesn't exist", junitTestFile.exists())
 
         def scalatestTestResults = new XmlSlurper().parse(scalatestTestFile)
         assertThat(scalatestTestResults.testcase.@name.text(), is('scalatest test should pass'))
 
-        def testngTestResults = new XmlSlurper().parse(testngTestFile)
-        assertThat(testngTestResults.testcase.@name.text(), is('testPass'))
+        def junitTestResults = new XmlSlurper().parse(junitTestFile)
+        assertThat(junitTestResults.testcase.@name.text(), is('testJunitPass'))
     }
 }

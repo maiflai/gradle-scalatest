@@ -22,6 +22,5 @@ dependencies {
 
     testRuntime 'org.pegdown:pegdown:1.6.0'
 
-    testCompile 'org.testng:testng:6.11'
+    testCompile 'junit:junit:4.12'
 }
-test.useTestNG()
