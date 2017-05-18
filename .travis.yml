@@ -1,1 +1,2 @@
 language: groovy
+after_failure: ./travis-after-failure.sh
