@@ -1,0 +1,25 @@
+buildscript {
+    repositories {
+        // need to get up to the working directory of gradle-plugins build
+        flatDir dir: "${project.projectDir}/../../../../build/libs"
+    }
+    dependencies {
+        classpath name: 'gradle-scalatest', version: '+'
+    }
+}
+
+apply plugin: 'com.github.maiflai.scalatest.task'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'org.scala-lang:scala-library:2.11.8'
+    testCompile "org.scalatest:scalatest_2.11:3.0.1"
+
+    testRuntime 'org.pegdown:pegdown:1.6.0'
+
+    testCompile 'org.testng:testng:6.11'
+}
+test.useTestNG()
