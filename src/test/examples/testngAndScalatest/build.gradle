@@ -8,6 +8,8 @@ buildscript {
     }
 }
 
+apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'com.github.maiflai.scalatest.task'
 
 repositories {
@@ -15,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.scala-lang:scala-library:2.11.8'
+    compile 'org.scala-lang:scala-library:2.11.6'
     testCompile "org.scalatest:scalatest_2.11:3.0.1"
 
     testRuntime 'org.pegdown:pegdown:1.6.0'

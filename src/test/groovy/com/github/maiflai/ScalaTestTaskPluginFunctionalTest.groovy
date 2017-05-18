@@ -21,8 +21,8 @@ class ScalaTestTaskPluginFunctionalTest {
         File testngResultsDir = new File(testResultsDir, 'test')
         File testngTestFile = new File(testngResultsDir, 'TEST-TestngTest.xml')
 
-        assertThat(scalatestTestFile.path + " Doesn't exist", scalatestTestFile.exists())
-        assertThat(testngTestFile.path + " Doesn't exist", testngTestFile.exists())
+        assertThat(scalatestTestFile.path + " doesn't exist", scalatestTestFile.exists())
+        assertThat(testngTestFile.path + " doesn't exist", testngTestFile.exists())
 
         def scalatestTestResults = new XmlSlurper().parse(scalatestTestFile)
         assertThat(scalatestTestResults.testcase.@name.text(), is('scalatest test should pass'))
