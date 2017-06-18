@@ -11,14 +11,14 @@ import static org.hamcrest.MatcherAssert.assertThat
 class JacocoTestActionIntegrationTest {
 
     @Test
-    public void testReportsAreProduced() throws Exception {
+    void testReportsAreProduced() throws Exception {
         def launcher = setupBuild(new File('src/test/examples/jacoco'))
-        launcher.forTasks('clean', 'test', 'jacoco').run()
+        launcher.forTasks('clean', 'test', 'jacocoTestReport').run()
         assertThat(new File('src/test/examples/jacoco/build/reports/jacoco/test/html'), isReport)
         assertThat(new File('src/test/examples/jacoco/build/reports/tests/test'), isReport)
     }
 
-    protected BuildLauncher setupBuild(File projectRoot) {
+    protected static BuildLauncher setupBuild(File projectRoot) {
         return GradleConnector.
                 newConnector().
                 forProjectDirectory(projectRoot).
