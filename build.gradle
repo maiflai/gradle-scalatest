@@ -46,7 +46,11 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
-test.dependsOn(jar)
+//noinspection GroovyAssignabilityCheck
+test {
+    dependsOn jar
+    testLogging.showStandardStreams true
+}
 
 artifacts {
     archives jar
@@ -64,7 +68,6 @@ if (project.version == 'unspecified') {
 }
 
 task showVersion() { doLast { println(project.version) } }
-
 
 
 def propOrDefault(String property) {
