@@ -16,6 +16,7 @@ class JacocoTestActionIntegrationTest {
         launcher.forTasks('clean', 'test', 'jacocoTestReport').run()
         assertThat(new File('src/test/examples/jacoco/build/reports/jacoco/test/html'), isReport)
         assertThat(new File('src/test/examples/jacoco/build/reports/tests/test'), isReport)
+        assertThat(new File('src/test/examples/jacoco/build/test-results/test/TEST-HelloSpec.xml'), isReadableFile)
     }
 
     protected static BuildLauncher setupBuild(File projectRoot) {
@@ -35,6 +36,18 @@ class JacocoTestActionIntegrationTest {
         @Override
         void describeTo(Description description) {
             description.appendText('a directory containing index.html')
+        }
+    }
+
+    protected TypeSafeMatcher<File> isReadableFile = new TypeSafeMatcher<File>() {
+        @Override
+        protected boolean matchesSafely(File file) {
+            return file.isFile() && file.exists() && file.canRead()
+        }
+
+        @Override
+        void describeTo(Description description) {
+            description.appendText('a readable file')
         }
     }
 }
