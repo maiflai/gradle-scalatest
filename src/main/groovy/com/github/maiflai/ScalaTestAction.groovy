@@ -54,16 +54,16 @@ class ScalaTestAction implements Action<Test> {
 
     private static String url(DirectoryReport report) {
         try {
-            return new URI("file", "", report.getEntryPoint().toURI().getPath(), null, null).toString();
+            return new URI("file", "", report.getEntryPoint().toURI().getPath(), null, null).toString()
         } catch (URISyntaxException e) {
-            throw UncheckedException.throwAsUncheckedException(e);
+            throw UncheckedException.throwAsUncheckedException(e)
         }
     }
 
 
     static JavaExecAction makeAction(Test t) {
-        FileResolver fileResolver = t.getServices().get(FileResolver.class);
-        JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver);
+        FileResolver fileResolver = t.getServices().get(FileResolver.class)
+        JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver)
         t.copyTo(javaExecHandleBuilder)
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
         javaExecHandleBuilder.setClasspath(t.getClasspath())
@@ -81,16 +81,16 @@ class ScalaTestAction implements Action<Test> {
     static String drop(TestLogEvent event, int granularity) {
         switch (event) {
             case TestLogEvent.STARTED: 'NHP' // test and suite and scope
-                break;
+                break
             case TestLogEvent.PASSED: 'CLQ' // test and suite and scope
-                break;
+                break
             case TestLogEvent.SKIPPED: 'XER' // ignored and pending and scope
-                break;
+                break
             case TestLogEvent.FAILED: ''
-                break;
+                break
             case TestLogEvent.STANDARD_OUT:
             case TestLogEvent.STANDARD_ERROR: 'OM' // infoprovided, markupprovided
-                break;
+                break
         }
     }
 
@@ -133,8 +133,15 @@ class ScalaTestAction implements Action<Test> {
         } else {
             args.add("-PS${t.maxParallelForks}".toString())
         }
-        args.add('-R')
-        args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
+        if (t.hasProperty("testClassesDirs")) {
+            t.getTestClassesDirs().each {
+                args.add('-R')
+                args.add(it.absolutePath.replace(' ', '\\ '))
+            }
+        } else {
+            args.add('-R')
+            args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
+        }
         t.filter.includePatterns.each {
             args.add('-z')
             args.add(it)
