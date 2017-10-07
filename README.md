@@ -6,7 +6,7 @@ Getting started
 ---------------
 http://plugins.gradle.org/plugin/com.github.maiflai.scalatest
 
-This replaces the existing test task actions with a scalatest implementation.
+This replaces the existing test task actions with a scalatest implementation (see [Other Frameworks](#other-frameworks) below).
 
 In addition to your `testCompile` dependency on scalatest, you also require a `testRuntime` dependency on pegdown in
 order to create the HTML report.
@@ -100,4 +100,24 @@ test {
         'server': '192.168.1.188'
         ])
 }
+```
+
+Other Frameworks
+----------------
+The default behaviour is to replace all `Test` tasks with a scalatest implementation.
+
+This may not be appropriate if you are migrating an existing project to scalatest.
+
+The `com.github.maiflai.gradle-scalatest.mode` property may be configured to support the following behaviour:
+
+|Value        |Behaviour                                              |
+|-------------|-------------------------------------------------------|
+|replaceAll   |replace all instances of the `Test` task               |
+|replaceOne   |replace only the `Test` task named "test"              |
+|append       |create a new scalatest `Test` task named "scalatest"   |
+
+It's probably easiest to set this in a gradle.properties file at the root of your project.
+
+```
+com.github.maiflai.gradle-scalatest.mode = append
 ```
