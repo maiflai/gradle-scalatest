@@ -19,6 +19,17 @@ dependencies {
 ```
 ---
 
+Compatibility
+-------------
+This plugin aims to be compatible with the current version of Gradle. 
+The table below indicates the minimum required version.
+
+|Gradle|gradle-scalatest|scalatest|
+|------|----------------|---------|
+|4.0   |0.16            |2.0      |
+|3.0   |0.14            |2.0      |
+|2.14.1|0.13            |2.0      |
+
 Parallel Testing
 ----------------
 The default behaviour is to use as many parallel threads as you have available processors.
