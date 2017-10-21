@@ -143,7 +143,11 @@ class ScalaTestAction implements Action<Test> {
             args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
         }
         t.filter.includePatterns.each {
-            args.add('-z')
+            if (it.endsWith("Test") || it.endsWith("Spec") || it.endsWith("Suite")) {
+                args.add('-q')
+            } else {
+                args.add('-z')
+            }
             args.add(it)
         }
         if (t.reports.getJunitXml().isEnabled()){

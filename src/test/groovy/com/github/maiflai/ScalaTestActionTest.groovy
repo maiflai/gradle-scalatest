@@ -11,6 +11,7 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
+import org.junit.runners.Parameterized
 
 import static com.github.maiflai.ScalaTestAction.other
 import static org.hamcrest.CoreMatchers.*
@@ -196,6 +197,17 @@ class ScalaTestActionTest {
         test.tags.exclude('jane', 'sue')
         def args = commandLine(test)
         assertThat(args, both(hasOption('-l', 'jane')).and(hasOption('-l', 'sue')))
+    }
+
+    @Test
+    void testsAreTranslatedToQ() throws Exception {
+        Task test = testTask()
+        String[] tests = ['MyTest', 'MySpec', 'MySuite']
+        test.filter.setIncludePatterns(tests)
+        def args = commandLine(test)
+        tests.each { it ->
+            assertThat(args, hasOption('-q', it))
+        }
     }
 
     @Test
