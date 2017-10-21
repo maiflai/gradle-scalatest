@@ -56,7 +56,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void workingDirectoryIsHonoured() throws Exception {
+    void workingDirectoryIsHonoured() throws Exception {
         Task test = testTask()
         test.workingDir = '/tmp'
         JavaExecAction action = ScalaTestAction.makeAction(test)
@@ -64,56 +64,56 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void environmentVariableIsCopied() {
+    void environmentVariableIsCopied() {
         Task test = testTask()
         test.environment.put('a', 'b')
         assertThat(environment(test).get('a') as String, equalTo('b'))
     }
 
     @Test
-    public void plainOutputIsWithoutColour() {
+    void plainOutputIsWithoutColour() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setConsoleOutput(ConsoleOutput.Plain)
         assertThat(commandLine(test), hasItem("-oDSW".toString()))
     }
 
     @Test
-    public void richOutput() {
+    void richOutput() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setConsoleOutput(ConsoleOutput.Rich)
         assertThat(commandLine(test), hasItem("-oDS".toString()))
     }
 
     @Test
-    public void autoOutputRetainsColour() {
+    void autoOutputRetainsColour() {
         Task test = testTask()
         test.getProject().getGradle().startParameter.setConsoleOutput(ConsoleOutput.Rich)
         assertThat(commandLine(test), hasItem("-oDS".toString()))
     }
 
     @Test
-    public void testDefaultLogging() throws Exception {
+    void testDefaultLogging() throws Exception {
         Task test = testTask()
         assertThat(test.testLogging.events, is(TestLogEvent.values() as Set))
         assertThat(commandLine(test), hasOutput('oD'))
     }
 
     @Test
-    public void fullStackTraces() throws Exception {
+    void fullStackTraces() throws Exception {
         Task test = testTask()
         test.testLogging.exceptionFormat = TestExceptionFormat.FULL
         assertThat(commandLine(test), hasOutput('oDF'))
     }
 
     @Test
-    public void shortStackTraces() throws Exception {
+    void shortStackTraces() throws Exception {
         Task test = testTask()
         test.testLogging.exceptionFormat = TestExceptionFormat.SHORT
         assertThat(commandLine(test), hasOutput('oDS'))
     }
 
     @Test
-    public void maxHeapSizeIsAdded() throws Exception {
+    void maxHeapSizeIsAdded() throws Exception {
         Task test = testTask()
         String size = '123m'
         test.maxHeapSize = size
@@ -121,7 +121,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void minHeapSizeIsAdded() throws Exception {
+    void minHeapSizeIsAdded() throws Exception {
         Task test = testTask()
         String size = '123m'
         test.minHeapSize = size
@@ -129,28 +129,28 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void jvmArgIsAdded() throws Exception {
+    void jvmArgIsAdded() throws Exception {
         String permSize = '-XX:MaxPermSize=256m'
         Task test = testTask().jvmArgs(permSize)
         assertThat(commandLine(test), hasItem(permSize))
     }
 
     @Test
-    public void sysPropIsAdded() throws Exception {
+    void sysPropIsAdded() throws Exception {
         Task test = testTask()
         test.systemProperties.put('bob', 'rita')
         assertThat(commandLine(test), hasItem('-Dbob=rita'))
     }
 
     @Test
-    public void parallelDefaultsToProcessorCount() throws Exception {
+    void parallelDefaultsToProcessorCount() throws Exception {
         Task test = testTask()
         int processors = Runtime.runtime.availableProcessors()
         assertThat(commandLine(test), hasItem("-PS$processors".toString()))
     }
 
     @Test
-    public void parallelSupportsConfiguration() throws Exception {
+    void parallelSupportsConfiguration() throws Exception {
         Task test = testTask()
         int forks = Runtime.runtime.availableProcessors() + 1
         test.maxParallelForks = forks
@@ -158,7 +158,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void noTagsAreSpecifiedByDefault() throws Exception {
+    void noTagsAreSpecifiedByDefault() throws Exception {
         Task test = testTask()
         assertThat(commandLine(test), both(not(hasItem('-n'))).and(not(hasItem('-l'))))
     }
@@ -183,7 +183,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void includesAreAddedAsTags() throws Exception {
+    void includesAreAddedAsTags() throws Exception {
         Task test = testTask()
         test.tags.include('bob', 'rita')
         def args = commandLine(test)
@@ -191,7 +191,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void excludesAreAddedAsTags() throws Exception {
+    void excludesAreAddedAsTags() throws Exception {
         Task test = testTask()
         test.tags.exclude('jane', 'sue')
         def args = commandLine(test)
@@ -199,7 +199,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void filtersAreTranslatedToZ() throws Exception {
+    void filtersAreTranslatedToZ() throws Exception {
         Task test = testTask()
         test.filter.setIncludePatterns('popped', 'weasel')
         def args = commandLine(test)
@@ -216,18 +216,18 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void suiteIsTranslatedToS() throws Exception {
+    void suiteIsTranslatedToS() throws Exception {
         checkSuiteTranslation('simple suite', { it.suite 'hello.World' }, ['hello.World'])
         checkSuiteTranslation('multiple calls', { it.suite 'a'; it.suite 'b' }, ['a', 'b'])
     }
 
     @Test
-    public void suitesAreTranslatedToS() throws Exception {
+    void suitesAreTranslatedToS() throws Exception {
         checkSuiteTranslation('list of suites', { it.suites 'a', 'b' }, ['a', 'b'])
     }
 
     @Test
-    public void distinctSuitesAreRun() throws Exception {
+    void distinctSuitesAreRun() throws Exception {
         Task test = testTask()
         test.suites 'a', 'a'
         def args = commandLine(test)
@@ -236,7 +236,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void testKnockout() throws Exception {
+    void testKnockout() throws Exception {
         assertThat(other([TestLogEvent.FAILED] as Set),
                 not(hasItem(TestLogEvent.FAILED)))
 
@@ -245,7 +245,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void failedOnlyReporting() throws Exception {
+    void failedOnlyReporting() throws Exception {
         Task test = testTask()
         test.testLogging.events = [TestLogEvent.FAILED]
         assertThat(commandLine(test), hasOutput('oCDEHLMNOPQRSX'))
@@ -253,7 +253,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void configString() throws Exception {
+    void configString() throws Exception {
         Task test = testTask()
         test.config 'a', 'b'
         def args = commandLine(test)
@@ -261,7 +261,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void configNumber() throws Exception {
+    void configNumber() throws Exception {
         Task test = testTask()
         test.config 'a', 1
         def args = commandLine(test)
@@ -269,7 +269,7 @@ class ScalaTestActionTest {
     }
 
     @Test
-    public void configMap() throws Exception {
+    void configMap() throws Exception {
         Task test = testTask()
         test.configMap([a: 'b', c: 1])
         def args = commandLine(test)
