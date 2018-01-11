@@ -23,7 +23,6 @@ class ScalaTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project t) {
         if (!t.plugins.hasPlugin(ScalaTestPlugin)) {
-            t.plugins.add(this)
             t.plugins.apply(JavaPlugin)
             t.plugins.apply(ScalaPlugin)
             switch (getMode(t)) {
