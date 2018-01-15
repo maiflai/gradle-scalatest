@@ -11,7 +11,6 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
-import org.junit.runners.Parameterized
 
 import static com.github.maiflai.ScalaTestAction.other
 import static org.hamcrest.CoreMatchers.*
@@ -20,6 +19,7 @@ import static org.hamcrest.core.Is.is
 import static org.junit.Assert.assertThat
 
 class ScalaTestActionTest {
+    static FACTORY = new BackwardsCompatibleJavaExecActionFactory(ProjectBuilder.builder().build().gradle.gradleVersion)
 
     private static Project testProject() {
         Project project = ProjectBuilder.builder().build()
@@ -32,7 +32,7 @@ class ScalaTestActionTest {
     }
 
     private static List<String> commandLine(org.gradle.api.tasks.testing.Test task) {
-        JavaExecAction action = ScalaTestAction.makeAction(task)
+        JavaExecAction action = ScalaTestAction.makeAction(task, FACTORY)
         action.getCommandLine()
     }
 
@@ -52,7 +52,7 @@ class ScalaTestActionTest {
     }
 
     private static Map<String, Object> environment(org.gradle.api.tasks.testing.Test task) {
-        JavaExecAction action = ScalaTestAction.makeAction(task)
+        JavaExecAction action = ScalaTestAction.makeAction(task, FACTORY)
         action.getEnvironment()
     }
 
@@ -60,7 +60,7 @@ class ScalaTestActionTest {
     void workingDirectoryIsHonoured() throws Exception {
         Task test = testTask()
         test.workingDir = '/tmp'
-        JavaExecAction action = ScalaTestAction.makeAction(test)
+        JavaExecAction action = ScalaTestAction.makeAction(test, FACTORY)
         assertThat(action.workingDir, equalTo(new File('/tmp')))
     }
 

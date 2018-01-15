@@ -1,5 +1,6 @@
 package com.github.maiflai
 
+import groovy.transform.Immutable
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.internal.file.FileResolver
@@ -10,7 +11,6 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.UncheckedException
-import org.gradle.process.internal.DefaultJavaExecAction
 import org.gradle.process.internal.JavaExecAction
 
 /**
@@ -19,15 +19,17 @@ import org.gradle.process.internal.JavaExecAction
  * <p>Classpath, JVM Args and System Properties are propagated.</p>
  * <p>Tests are launched against the testClassesDir.</p>
  */
+@Immutable
 class ScalaTestAction implements Action<Test> {
 
     static String TAGS = 'tags'
     static String SUITES = '_suites'
     static String CONFIG = '_config'
+    BackwardsCompatibleJavaExecActionFactory factory
 
     @Override
     void execute(Test t) {
-        def result = makeAction(t).execute()
+        def result = makeAction(t, factory).execute()
         if (result.exitValue != 0){
             handleTestFailures(t)
         }
@@ -61,9 +63,9 @@ class ScalaTestAction implements Action<Test> {
     }
 
 
-    static JavaExecAction makeAction(Test t) {
+    static JavaExecAction makeAction(Test t, BackwardsCompatibleJavaExecActionFactory factory) {
         FileResolver fileResolver = t.getServices().get(FileResolver.class)
-        JavaExecAction javaExecHandleBuilder = new DefaultJavaExecAction(fileResolver)
+        JavaExecAction javaExecHandleBuilder = factory.create(fileResolver)
         t.copyTo(javaExecHandleBuilder)
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
         javaExecHandleBuilder.setClasspath(t.getClasspath())
