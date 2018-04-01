@@ -257,6 +257,15 @@ class ScalaTestActionTest {
     }
 
     @Test
+    void testNoEventsRemovesStdOut() throws Exception {
+        Task test = testTask()
+        test.testLogging.events = []
+        def args = commandLine(test)
+        def stdoutReporter = args.findAll { it.startsWith('-o') }
+        assertThat(stdoutReporter.size(), equalTo(0))
+    }
+
+    @Test
     void failedOnlyReporting() throws Exception {
         Task test = testTask()
         test.testLogging.events = [TestLogEvent.FAILED]

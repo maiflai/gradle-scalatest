@@ -123,7 +123,11 @@ class ScalaTestAction implements Action<Test> {
     static String durations = 'D'
 
     static String reporting(Test t) {
-        '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
+        if (t.testLogging.events) {
+            '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
+        } else {
+            ''
+        }
     }
 
     private static Iterable<String> getArgs(Test t) {
