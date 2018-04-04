@@ -123,17 +123,15 @@ class ScalaTestAction implements Action<Test> {
     static String durations = 'D'
 
     static String reporting(Test t) {
-        if (t.testLogging.events) {
-            '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
-        } else {
-            ''
-        }
+        return '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
     }
 
     private static Iterable<String> getArgs(Test t) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
-        args.add(reporting(t))
+        if (t.testLogging.events) {
+            args.add(reporting(t))
+        }
         if (t.maxParallelForks == 0) {
             args.add('-PS')
         } else {
@@ -186,6 +184,7 @@ class ScalaTestAction implements Action<Test> {
         config?.entrySet()?.each { entry ->
             args.add("-D${entry.key}=${entry.value}")
         }
+        assert args.every { it.length() > 0}
         return args
     }
 }
