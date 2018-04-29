@@ -146,7 +146,7 @@ class ScalaTestAction implements Action<Test> {
             args.add('-R')
             args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
         }
-        t.filter.includePatterns.each {
+        def appendTestPattern = { String it ->
             if (it.endsWith("Test") || it.endsWith("Spec") || it.endsWith("Suite")) {
                 args.add('-q')
             } else {
@@ -154,6 +154,10 @@ class ScalaTestAction implements Action<Test> {
             }
             args.add(it)
         }
+        if (t.filter.hasProperty('commandLineIncludePatterns')) {
+            t.filter.commandLineIncludePatterns.each { appendTestPattern(it) }
+        }
+        t.filter.includePatterns.each { appendTestPattern(it) }
         if (t.reports.getJunitXml().isEnabled()){
             args.add('-u')
             args.add(t.reports.getJunitXml().getEntryPoint().getAbsolutePath())
