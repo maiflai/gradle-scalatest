@@ -132,9 +132,7 @@ class ScalaTestAction implements Action<Test> {
         if (t.testLogging.events) {
             args.add(reporting(t))
         }
-        if (t.maxParallelForks == 0) {
-            args.add('-PS')
-        } else {
+        if (t.maxParallelForks > 1) {
             args.add("-PS${t.maxParallelForks}".toString())
         }
         if (t.hasProperty("testClassesDirs")) {

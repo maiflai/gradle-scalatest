@@ -57,7 +57,6 @@ class ScalaTestPlugin implements Plugin<Project> {
     }
 
     static void configure(Test test, BackwardsCompatibleJavaExecActionFactory factory) {
-        test.maxParallelForks = Runtime.runtime.availableProcessors()
         //noinspection GroovyAssignabilityCheck
         test.actions = [
                 new JacocoTestAction(),
