@@ -19,7 +19,7 @@ import org.gradle.process.internal.JavaExecAction
  * <p>Classpath, JVM Args and System Properties are propagated.</p>
  * <p>Tests are launched against the testClassesDir.</p>
  */
-@Immutable
+@Immutable(knownImmutableClasses = [BackwardsCompatibleJavaExecActionFactory])
 class ScalaTestAction implements Action<Test> {
 
     static String TAGS = 'tags'
