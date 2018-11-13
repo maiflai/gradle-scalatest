@@ -144,13 +144,6 @@ class ScalaTestActionTest {
     }
 
     @Test
-    void parallelDefaultsToProcessorCount() throws Exception {
-        Task test = testTask()
-        int processors = Runtime.runtime.availableProcessors()
-        assertThat(commandLine(test), hasItem("-PS$processors".toString()))
-    }
-
-    @Test
     void parallelSupportsConfiguration() throws Exception {
         Task test = testTask()
         int forks = Runtime.runtime.availableProcessors() + 1
