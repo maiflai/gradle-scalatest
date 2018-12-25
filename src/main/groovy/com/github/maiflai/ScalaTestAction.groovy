@@ -25,6 +25,9 @@ class ScalaTestAction implements Action<Test> {
     static String TAGS = 'tags'
     static String SUITES = '_suites'
     static String CONFIG = '_config'
+    static String TESTRESULT = '_testResult'
+    static String TESTOUTPUT = '_testOutput'
+    static String TESTERROR = '_testError'
     BackwardsCompatibleJavaExecActionFactory factory
 
     @Override
@@ -71,6 +74,18 @@ class ScalaTestAction implements Action<Test> {
         javaExecHandleBuilder.setClasspath(t.getClasspath())
         javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
         javaExecHandleBuilder.setArgs(getArgs(t))
+        javaExecHandleBuilder.setWorkingDir(t.getWorkingDir())
+        // set the standard output and error
+        def output = t.extensions.findByName(TESTOUTPUT) as String
+        if (output && output.size() > 0) {
+            def outFile = new FileOutputStream(output, true)
+            javaExecHandleBuilder.setStandardOutput(outFile)
+        }
+        def errorOutput = t.extensions.findByName(TESTERROR) as String
+        if (errorOutput && errorOutput.size() > 0) {
+            def errFile = new FileOutputStream(errorOutput, true)
+            javaExecHandleBuilder.setErrorOutput(errFile)
+        }
         javaExecHandleBuilder.setIgnoreExitValue(true)
         return javaExecHandleBuilder
     }
@@ -167,6 +182,11 @@ class ScalaTestAction implements Action<Test> {
              def dest = t.reports.getHtml().getDestination()
              dest.mkdirs()
              args.add(dest.getAbsolutePath())
+        }
+        def result = t.extensions.findByName(TESTRESULT) as String
+        if (result && result.size() > 0) {
+            args.add('-f')
+            args.add(result)
         }
         def tags = t.extensions.findByName(TAGS) as PatternSet
         if (tags) {
