@@ -13,8 +13,8 @@ plugins {
 }
 
 apply plugin: 'com.gradle.plugin-publish'
-apply plugin: 'signing'
 apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'groovy'
 
 group = 'com.github.maiflai'
@@ -49,9 +49,12 @@ task sourcesJar(type: Jar) {
 test.dependsOn(jar)
 
 artifacts {
-    archives jar
     archives groovydocJar
     archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
 }
 
 if (project.version == 'unspecified') {
