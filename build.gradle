@@ -5,7 +5,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
+        classpath "com.gradle.publish:plugin-publish-plugin:0.10.1"
     }
 }
 plugins {
@@ -52,10 +52,6 @@ artifacts {
     archives jar
     archives groovydocJar
     archives sourcesJar
-}
-
-signing {
-    sign configurations.archives
 }
 
 if (project.version == 'unspecified') {
