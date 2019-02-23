@@ -37,13 +37,13 @@ dependencies {
 }
 
 task groovydocJar(type: Jar, dependsOn: groovydoc) {
-    classifier = 'groovydoc'
     from "$buildDir/docs/groovydoc"
+    archiveClassifier = 'groovydoc'
 }
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 test.dependsOn(jar)
