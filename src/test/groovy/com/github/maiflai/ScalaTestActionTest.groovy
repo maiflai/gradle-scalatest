@@ -201,7 +201,7 @@ class ScalaTestActionTest {
     @Test
     void testsAreTranslatedToQ() throws Exception {
         Task test = testTask()
-        String[] tests = ['MyTest', 'MySpec', 'MySuite']
+        String[] tests = ['MyTest', 'MySpec', 'MySuite', 'ExampleSpec22']
         test.filter.setIncludePatterns(tests)
         def args = commandLine(test)
         tests.each { it ->

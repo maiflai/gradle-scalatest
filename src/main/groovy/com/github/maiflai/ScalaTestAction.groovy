@@ -14,6 +14,8 @@ import org.gradle.internal.UncheckedException
 import org.gradle.process.internal.DefaultExecActionFactory
 import org.gradle.process.internal.JavaExecAction
 
+import java.util.regex.Pattern
+
 /**
  * <p>Designed to replace the normal Test Action with a new JavaExecAction
  * launching the scalatest Runner.</p>
@@ -125,6 +127,8 @@ class ScalaTestAction implements Action<Test> {
         return '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
     }
 
+    private static Pattern maybeTest = ~/Spec|Test|Suite/
+
     private static Iterable<String> getArgs(Test t) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
@@ -146,7 +150,7 @@ class ScalaTestAction implements Action<Test> {
             args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
         }
         def appendTestPattern = { String it ->
-            if (it.endsWith("Test") || it.endsWith("Spec") || it.endsWith("Suite")) {
+            if (it =~ maybeTest) {
                 args.add('-q')
             } else {
                 args.add('-z')
