@@ -71,6 +71,10 @@ class ScalaTestPlugin implements Plugin<Project> {
         test.extensions.add(ScalaTestAction.CONFIG, config)
         test.extensions.add("config", { String name, value -> config.put(name, value) })
         test.extensions.add("configMap", { Map<String, ?> c -> config.putAll(c) })
+        List<String> reporters = []
+        test.extensions.add(ScalaTestAction.REPORTERS, reporters)
+        test.extensions.add("reporter", { String name -> reporters.add(name) })
+        test.extensions.add("reporters", { String... name -> reporters.addAll(name) })
         test.testLogging.events = TestLogEvent.values() as Set
     }
 

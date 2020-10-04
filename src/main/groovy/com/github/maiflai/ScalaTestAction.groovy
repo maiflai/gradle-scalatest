@@ -28,6 +28,7 @@ class ScalaTestAction implements Action<Test> {
     static String TAGS = 'tags'
     static String SUITES = '_suites'
     static String CONFIG = '_config'
+    static String REPORTERS = '_reporters'
 
     @Override
     void execute(Test t) {
@@ -190,6 +191,11 @@ class ScalaTestAction implements Action<Test> {
         def config = t.extensions.findByName(CONFIG) as Map<String, ?>
         config?.entrySet()?.each { entry ->
             args.add("-D${entry.key}=${entry.value}")
+        }
+        def reporters = t.extensions.findByName(REPORTERS) as List<String>
+        reporters?.toSet()?.each {
+            args.add('-c')
+            args.add(it)
         }
         assert args.every { it.length() > 0}
         return args

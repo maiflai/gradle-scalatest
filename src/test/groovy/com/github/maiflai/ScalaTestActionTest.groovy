@@ -295,4 +295,12 @@ class ScalaTestActionTest {
         def args = commandLine(test)
         assertThat(args, both(hasItem('-Da=b')).and(hasItem("-Dc=1")))
     }
+
+    @Test
+    void customReporter() throws Exception {
+        Task test = testTask()
+        test.reporter('my.Reporter')
+        def args = commandLine(test)
+        assertThat(args, hasOption('-c', 'my.Reporter'))
+    }
 }

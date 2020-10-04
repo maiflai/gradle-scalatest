@@ -119,6 +119,14 @@ test {
 }
 ```
 
+Custom Reporters
+----------------
+```groovy
+test {
+    reporter 'my.Reporter'
+}
+```
+
 Other Frameworks
 ----------------
 The default behaviour is to replace all `Test` tasks with a scalatest implementation.
