@@ -194,7 +194,7 @@ class ScalaTestAction implements Action<Test> {
         }
         def reporters = t.extensions.findByName(REPORTERS) as List<String>
         reporters?.toSet()?.each {
-            args.add('-c')
+            args.add('-P')
             args.add(it)
         }
         assert args.every { it.length() > 0}
