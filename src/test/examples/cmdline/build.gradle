@@ -19,3 +19,7 @@ dependencies {
     testCompile 'org.scalatest:scalatest_2.12:3.0.0'
     testRuntime 'org.pegdown:pegdown:1.6.0'
 }
+
+test {
+    reporter 'MyReporter'
+}

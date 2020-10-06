@@ -301,6 +301,6 @@ class ScalaTestActionTest {
         Task test = testTask()
         test.reporter('my.Reporter')
         def args = commandLine(test)
-        assertThat(args, hasOption('-P', 'my.Reporter'))
+        assertThat(args, hasOption('-C', 'my.Reporter'))
     }
 }
