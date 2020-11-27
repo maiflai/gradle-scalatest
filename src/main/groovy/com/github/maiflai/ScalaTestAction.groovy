@@ -141,14 +141,15 @@ class ScalaTestAction implements Action<Test> {
         } else {
             args.add("-PS${t.maxParallelForks}".toString())
         }
-        if (t.hasProperty("testClassesDirs")) {
-            t.getTestClassesDirs().each {
-                args.add('-R')
-                args.add(it.absolutePath.replace(' ', '\\ '))
-            }
+        def escapeFile = { File f ->
+            f.absolutePath.replace(' ', '\\ ')
+        }
+        if (t.hasProperty("testClassesDirs") && t.getTestClassesDirs().size() > 1) {
+            args.add('-R')
+            args.add(t.getTestClassesDirs().collect { escapeFile(it) }.join(' '))
         } else {
             args.add('-R')
-            args.add(t.getTestClassesDir().absolutePath.replace(' ', '\\ '))
+            args.add(escapeFile(t.getTestClassesDirs().singleFile))
         }
         def appendTestPattern = { String it ->
             if (it =~ maybeTest) {

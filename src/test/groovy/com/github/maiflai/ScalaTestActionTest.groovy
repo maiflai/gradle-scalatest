@@ -303,4 +303,16 @@ class ScalaTestActionTest {
         def args = commandLine(test)
         assertThat(args, hasOption('-C', 'my.Reporter'))
     }
+
+    @Test
+    void multipleTestClassesDir() throws Exception {
+        Task test = testTask()
+        // prefix with '/' for absolute rather than project-relative path
+        test.testClassesDirs = test.project.files(
+                '/serviceuitest-1.1beta4.jar',
+                '/myjini',
+                '/target/class files')
+        def args = commandLine(test)
+        assertThat(args, hasOption('-R', '/serviceuitest-1.1beta4.jar /myjini /target/class\\ files'))
+    }
 }
