@@ -3,7 +3,6 @@ package com.github.maiflai
 import groovy.transform.Immutable
 import org.gradle.api.Action
 import org.gradle.api.GradleException
-import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.logging.configuration.ConsoleOutput
 import org.gradle.api.reporting.DirectoryReport
 import org.gradle.api.tasks.testing.Test
@@ -144,12 +143,12 @@ class ScalaTestAction implements Action<Test> {
         def escapeFile = { File f ->
             f.absolutePath.replace(' ', '\\ ')
         }
-        if (t.hasProperty("testClassesDirs") && t.getTestClassesDirs().size() > 1) {
-            args.add('-R')
-            args.add(t.getTestClassesDirs().collect { escapeFile(it) }.join(' '))
+        args.add('-R')
+        def testClassesDirs = t.getTestClassesDirs()
+        if (testClassesDirs.size() > 1) {
+            args.add(testClassesDirs.collect { escapeFile(it) }.join(' '))
         } else {
-            args.add('-R')
-            args.add(escapeFile(t.getTestClassesDirs().singleFile))
+            args.add(escapeFile(testClassesDirs.singleFile))
         }
         def appendTestPattern = { String it ->
             if (it =~ maybeTest) {
