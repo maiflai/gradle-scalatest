@@ -8,9 +8,6 @@ buildscript {
         classpath "com.gradle.publish:plugin-publish-plugin:0.12.0"
     }
 }
-plugins {
-    id "com.jfrog.bintray" version "1.0"
-}
 
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'maven'
@@ -85,29 +82,6 @@ pluginBundle {
             id = 'com.github.maiflai.scalatest'
             displayName = 'Gradle ScalaTest plugin'
         }
-    }
-}
-
-bintray {
-    user = propOrDefault('bintrayUsername')
-    key = propOrDefault('bintrayApiKey')
-    configurations = ['archives']
-    dryRun = false
-    publish = false
-    pkg {
-        repo = 'maven'
-        name = project.name
-        desc = project.description
-        websiteUrl = project.websiteUrl
-        issueTrackerUrl = 'https://github.com/maiflai/gradle-scalatest/issues'
-        vcsUrl = project.sourceUrl
-        licenses = ['unlicense']
-        labels = ['gradle', 'testing', 'scala']
-        publicDownloadNumbers = true
-        version {
-            attributes = ['gradle-plugin': 'com.github.maiflai.scalatest:com.github.maiflai:gradle-scalatest']
-        }
-
     }
 }
 
