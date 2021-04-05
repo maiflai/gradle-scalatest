@@ -10,7 +10,7 @@ buildscript {
 }
 
 apply plugin: 'com.gradle.plugin-publish'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'groovy'
 
@@ -28,9 +28,9 @@ repositories {
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    testCompile 'junit:junit:4.12'
+    implementation gradleApi()
+    implementation localGroovy()
+    testImplementation 'junit:junit:4.12'
 }
 
 task groovydocJar(type: Jar, dependsOn: groovydoc) {
@@ -50,13 +50,8 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    sign configurations.archives
-}
-
 if (project.version == 'unspecified') {
     version = '0.1-SNAPSHOT'
-    project.signArchives.enabled = false
 }
 
 task showVersion() { doLast { println(project.version) } }
@@ -85,38 +80,44 @@ pluginBundle {
     }
 }
 
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: propOrDefault('sonatypeUsername'), password: propOrDefault('sonatypePassword'))
+        maven {
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials(PasswordCredentials) {
+                username = propOrDefault('sonatypeUsername')
+                password = propOrDefault('sonatypePassword')
             }
-
-            pom.project {
-                name project.name
-                description project.description
-                url project.websiteUrl
-
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = project.name
+                description = project.description
+                url = project.websiteUrl
                 scm {
-                    url "scm:git:${project.sourceUrl}"
+                    url = "scm:git:${project.sourceUrl}"
                 }
 
                 licenses {
                     license {
-                        name 'unlicense'
-                        url 'http://unlicense.org'
-                        distribution 'repo'
+                        name = 'unlicense'
+                        url = 'http://unlicense.org'
+                        distribution = 'repo'
                     }
                 }
 
                 developers {
                     developer {
-                        id 'maiflai'
+                        id = 'maiflai'
                     }
                 }
             }
         }
     }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
