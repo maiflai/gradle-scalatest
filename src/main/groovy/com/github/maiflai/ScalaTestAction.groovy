@@ -66,7 +66,7 @@ class ScalaTestAction implements Action<Test> {
 
 
     static JavaExecAction makeAction(Test t) {
-        JavaExecAction javaExecHandleBuilder = DefaultExecActionFactory.root().newJavaExecAction()
+        JavaExecAction javaExecHandleBuilder = DefaultExecActionFactory.root(t.project.gradle.gradleUserHomeDir).newJavaExecAction()
         t.copyTo(javaExecHandleBuilder)
         javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
         javaExecHandleBuilder.setClasspath(t.getClasspath())

@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.12.10'
-    testCompile 'org.scalatest:scalatest_2.12:3.0.0'
-    testRuntime 'org.pegdown:pegdown:1.6.0'
+    implementation 'org.scala-lang:scala-library:2.12.10'
+    testImplementation 'org.scalatest:scalatest_2.12:3.0.0'
+    testRuntimeOnly 'org.pegdown:pegdown:1.6.0'
 }

@@ -17,10 +17,10 @@ repositories {
 }
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.13.3'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.scalatest:scalatest_2.13:3.2.0'
-    testRuntime 'com.vladsch.flexmark:flexmark-all:0.35.10'
+    implementation 'org.scala-lang:scala-library:2.13.3'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.scalatest:scalatest_2.13:3.2.0'
+    testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.35.10'
 }
 
 task integrationTest(type: Test) {
