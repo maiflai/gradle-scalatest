@@ -121,5 +121,3 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
-
-tasks.withType(Test) { jvmArgs += "-noverify" }
