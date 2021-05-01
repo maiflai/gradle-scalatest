@@ -45,11 +45,6 @@ task sourcesJar(type: Jar) {
 
 test.dependsOn(jar)
 
-artifacts {
-    archives groovydocJar
-    archives sourcesJar
-}
-
 if (project.version == 'unspecified') {
     version = '0.1-SNAPSHOT'
 }
@@ -114,6 +109,9 @@ publishing {
                     }
                 }
             }
+            from components.java
+            artifact groovydocJar
+            artifact sourcesJar
         }
     }
 }
