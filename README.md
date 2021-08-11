@@ -1,6 +1,6 @@
 gradle-scalatest
 ================
-A plugin to enable the use of scalatest in a gradle Scala project. [![Build Status](https://travis-ci.org/maiflai/gradle-scalatest.svg?branch=master)](https://travis-ci.org/maiflai/gradle-scalatest)
+A plugin to enable the use of scalatest in a gradle Scala project. [![Java CI with Gradle](https://github.com/maiflai/gradle-scalatest/actions/workflows/gradle.yml/badge.svg)](https://github.com/maiflai/gradle-scalatest/actions/workflows/gradle.yml)
 
 Getting started
 ---------------
