@@ -45,6 +45,10 @@ task sourcesJar(type: Jar) {
 
 test.dependsOn(jar)
 
+test {
+    testLogging.showStandardStreams = System.env.CI == 'true'
+}
+
 if (project.version == 'unspecified') {
     version = '0.1-SNAPSHOT'
 }
