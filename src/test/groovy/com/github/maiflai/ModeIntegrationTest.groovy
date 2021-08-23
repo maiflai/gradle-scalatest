@@ -1,30 +1,27 @@
 package com.github.maiflai
 
-import org.gradle.tooling.BuildLauncher
-import org.gradle.tooling.GradleConnector
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
 
-class ModeIntegrationTest {
+class ModeIntegrationTest extends BaseExampleTest {
+
+    ModeIntegrationTest() {
+        super('mixed')
+    }
 
     @Test
     void testDefaultIsToReplaceAllTestTasks() throws Exception {
-        setupBuild()
-                .forTasks('clean', 'test', 'integrationTest')
-                .run()
+        runTasks('clean', 'test', 'integrationTest')
         assertThat(testReport, isScalaTestReport)
         assertThat(integrationTestReport, isScalaTestReport)
     }
 
-
     @Test
     void testAppendScalaTestTask() throws Exception {
-        setupBuild(ScalaTestPlugin.Mode.append)
-                .forTasks('clean', 'test', 'integrationTest', 'scalatest')
-                .run()
+        runTasks(ScalaTestPlugin.Mode.append, 'clean', 'test', 'integrationTest', 'scalatest')
         assertThat(scalaTestReport, isScalaTestReport)
         assertThat(testReport, isJUnitReport)
         assertThat(integrationTestReport, isJUnitReport)
@@ -32,42 +29,21 @@ class ModeIntegrationTest {
 
     @Test
     void testReplaceTestTask() throws Exception {
-        setupBuild(ScalaTestPlugin.Mode.replaceOne)
-                .forTasks('clean', 'test', 'integrationTest')
-                .run()
+        runTasks(ScalaTestPlugin.Mode.replaceOne, 'clean', 'test', 'integrationTest')
         assertThat(testReport, isScalaTestReport)
         assertThat(integrationTestReport, isJUnitReport)
     }
 
     @Test
     void testReplaceAllTestTasks() throws Exception {
-        setupBuild(ScalaTestPlugin.Mode.replaceAll)
-                .forTasks('clean', 'test', 'integrationTest')
-                .run()
+        runTasks(ScalaTestPlugin.Mode.replaceAll, 'clean', 'test', 'integrationTest')
         assertThat(testReport, isScalaTestReport)
         assertThat(integrationTestReport, isScalaTestReport)
     }
 
-    private static File testReport = new File('src/test/examples/mixed/build/reports/tests/test/index.html')
-    private static File scalaTestReport = new File('src/test/examples/mixed/build/reports/tests/scalatest/index.html')
-    private static File integrationTestReport = new File('src/test/examples/mixed/build/reports/tests/integrationTest/index.html')
-
-    private static BuildLauncher setupBuild() {
-        return GradleConnector.
-                newConnector().
-                forProjectDirectory(new File('src/test/examples/mixed')).
-                connect().
-                newBuild()
-    }
-
-    private static BuildLauncher setupBuild(ScalaTestPlugin.Mode mode) {
-        return GradleConnector.
-                newConnector().
-                forProjectDirectory(new File('src/test/examples/mixed')).
-                connect().
-                newBuild().
-                withArguments("-Pcom.github.maiflai.gradle-scalatest.mode=$mode")
-    }
+    private File testReport = new File(projectDir, 'build/reports/tests/test/index.html')
+    private File scalaTestReport = new File(projectDir, 'build/reports/tests/scalatest/index.html')
+    private File integrationTestReport = new File(projectDir, 'build/reports/tests/integrationTest/index.html')
 
     private static boolean contains(File file, String string) {
         return file.exists() &&

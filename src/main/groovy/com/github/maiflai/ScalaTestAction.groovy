@@ -32,7 +32,7 @@ class ScalaTestAction implements Action<Test> {
     @Override
     void execute(Test t) {
         def result = makeAction(t).execute()
-        if (result.exitValue != 0){
+        if (result.exitValue != 0) {
             handleTestFailures(t)
         }
     }
@@ -40,18 +40,17 @@ class ScalaTestAction implements Action<Test> {
     private static void handleTestFailures(Test t) {
         String message = "There were failing tests"
         def htmlReport = t.reports.html
-        if (htmlReport.isEnabled()) {
+        if (htmlReport.getRequired().get()) {
             message = message.concat(". See the report at: ").concat(url(htmlReport))
         } else {
             def junitXmlReport = t.reports.junitXml
-            if (junitXmlReport.isEnabled()) {
+            if (junitXmlReport.getRequired().get()) {
                 message = message.concat(". See the results at: ").concat(url(junitXmlReport))
             }
         }
         if (t.ignoreFailures) {
             t.logger.warn(message)
-        }
-        else {
+        } else {
             throw new GradleException(message)
         }
     }
@@ -68,7 +67,7 @@ class ScalaTestAction implements Action<Test> {
     static JavaExecAction makeAction(Test t) {
         JavaExecAction javaExecHandleBuilder = DefaultExecActionFactory.root(t.project.gradle.gradleUserHomeDir).newJavaExecAction()
         t.copyTo(javaExecHandleBuilder)
-        javaExecHandleBuilder.setMain('org.scalatest.tools.Runner')
+        javaExecHandleBuilder.getMainClass().set('org.scalatest.tools.Runner')
         javaExecHandleBuilder.setClasspath(t.getClasspath())
         javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
         javaExecHandleBuilder.setArgs(getArgs(t))
@@ -162,15 +161,15 @@ class ScalaTestAction implements Action<Test> {
             t.filter.commandLineIncludePatterns.each { appendTestPattern(it) }
         }
         t.filter.includePatterns.each { appendTestPattern(it) }
-        if (t.reports.getJunitXml().isEnabled()){
+        if (t.reports.getJunitXml().getRequired().get()) {
             args.add('-u')
             args.add(t.reports.getJunitXml().getEntryPoint().getAbsolutePath())
         }
-        if (t.reports.getHtml().isEnabled()){
+        if (t.reports.getHtml().getRequired().get()) {
             args.add('-h')
-             def dest = t.reports.getHtml().getDestination()
-             dest.mkdirs()
-             args.add(dest.getAbsolutePath())
+            def dest = t.reports.getHtml().getOutputLocation().get().getAsFile()
+            dest.mkdirs()
+            args.add(dest.getAbsolutePath())
         }
         def tags = t.extensions.findByName(TAGS) as PatternSet
         if (tags) {
@@ -197,7 +196,7 @@ class ScalaTestAction implements Action<Test> {
             args.add('-C')
             args.add(it)
         }
-        assert args.every { it.length() > 0}
+        assert args.every { it.length() > 0 }
         return args
     }
 }

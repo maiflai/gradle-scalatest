@@ -1,44 +1,32 @@
 package com.github.maiflai
 
-import org.gradle.tooling.BuildLauncher
-import org.gradle.tooling.GradleConnector
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 
+import static org.hamcrest.CoreMatchers.not
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.core.CombinableMatcher.both
-import static org.hamcrest.CoreMatchers.not
 
-class CommandLineIntegrationTest {
+class CommandLineIntegrationTest extends BaseExampleTest {
+
+    CommandLineIntegrationTest() {
+        super('cmdline')
+    }
 
     @Test
     void testSpecIsRun() throws Exception {
-        setupBuild()
-                .forTasks('clean', 'test', '--tests', 'MySpec')
-                .run()
+        runTasks('clean', 'test', '--tests', 'MySpec')
         assertThat(testReport, both(ran('bob')).and(ran('rita')))
     }
 
     @Test
     void testOnlyTestIsRun() throws Exception {
-        setupBuild()
-                .forTasks('clean', 'test', '--tests', 'bob')
-                .run()
+        runTasks('clean', 'test', '--tests', 'bob')
         assertThat(testReport, both(ran('bob')).and(not(ran('rita'))))
     }
 
-
-    private static File projectDir = new File('src/test/examples/cmdline')
-    private static File testReport = new File(projectDir, 'build/test-results/test/TEST-MySpec.xml')
-
-    private static BuildLauncher setupBuild() {
-        return GradleConnector.
-                newConnector().
-                forProjectDirectory(projectDir).
-                connect().
-                newBuild()
-    }
+    private File testReport = new File(projectDir, 'build/test-results/test/TEST-MySpec.xml')
 
     private static boolean contains(File file, String string) {
         return file.exists() &&
