@@ -128,6 +128,14 @@ test {
 }
 ```
 
+Span Scale Factor
+----------------
+```groovy
+test {
+    spanScaleFactor 10.0
+}
+```
+
 Other Frameworks
 ----------------
 The default behaviour is to replace all `Test` tasks with a scalatest implementation.
