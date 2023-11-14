@@ -27,6 +27,7 @@ The table below indicates the minimum required version.
 
 |Gradle|gradle-scalatest|scalatest|
 |------|----------------|---------|
+|8.0   |0.32            |2.0      |
 |7.0   |0.31            |2.0      |
 |6.5.1 |0.25            |2.0      |
 |5.3   |0.25            |2.0      |
