@@ -1,28 +1,41 @@
 package com.github.maiflai
 
-import groovy.transform.Immutable
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.logging.configuration.ConsoleOutput
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.reporting.DirectoryReport
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.UncheckedException
-import org.gradle.process.internal.DefaultExecActionFactory
-import org.gradle.process.internal.JavaExecAction
+import org.gradle.process.ExecOperations
 
+import javax.inject.Inject
 import java.util.regex.Pattern
 
 /**
  * <p>Designed to replace the normal Test Action with a new JavaExecAction
  * launching the scalatest Runner.</p>
  * <p>Classpath, JVM Args and System Properties are propagated.</p>
- * <p>Tests are launched against the testClassesDir.</p>
- */
-@Immutable
-class ScalaTestAction implements Action<Test> {
+ * <p>Tests are launched against the testClassesDir.</p>*/
+abstract class ScalaTestAction implements Action<Test> {
+
+    @Inject
+    abstract ExecOperations getExecOperations();
+
+    @Input
+    abstract ListProperty<String> getSuites();
+
+    @Input
+    abstract MapProperty<String, Object> getConfig();
+
+    @Input
+    abstract ListProperty<String> getReporters();
 
     static String TAGS = 'tags'
     static String SUITES = '_suites'
@@ -31,7 +44,13 @@ class ScalaTestAction implements Action<Test> {
 
     @Override
     void execute(Test t) {
-        def result = makeAction(t).execute()
+        def result = execOperations.javaexec {
+            mainClass = 'org.scalatest.tools.Runner'
+            classpath = t.classpath
+            jvmArgs = t.allJvmArgs
+            args = ScalaTestAction.getArgs(t, this.suites.get(), this.config.get(), this.reporters.get())
+            ignoreExitValue = true
+        }
         if (result.exitValue != 0) {
             handleTestFailures(t)
         }
@@ -63,17 +82,6 @@ class ScalaTestAction implements Action<Test> {
         }
     }
 
-
-    static JavaExecAction makeAction(Test t) {
-        JavaExecAction javaExecHandleBuilder = DefaultExecActionFactory.root(t.project.gradle.gradleUserHomeDir).newJavaExecAction()
-        t.copyTo(javaExecHandleBuilder)
-        javaExecHandleBuilder.getMainClass().set('org.scalatest.tools.Runner')
-        javaExecHandleBuilder.setClasspath(t.getClasspath())
-        javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
-        javaExecHandleBuilder.setArgs(getArgs(t))
-        javaExecHandleBuilder.setIgnoreExitValue(true)
-        return javaExecHandleBuilder
-    }
 
     static Set<TestLogEvent> other(Set<TestLogEvent> required) {
         def all = TestLogEvent.values() as Set
@@ -128,7 +136,7 @@ class ScalaTestAction implements Action<Test> {
 
     private static Pattern maybeTest = ~/Spec|Test|Suite/
 
-    private static Iterable<String> getArgs(Test t) {
+    private static Iterable<String> getArgs(Test t, List<String> suites, Map<String, Object> config, List<String> reporters) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
         if (t.testLogging.events) {
@@ -139,8 +147,7 @@ class ScalaTestAction implements Action<Test> {
         } else {
             args.add("-PS${t.maxParallelForks}".toString())
         }
-        def escapeFile = { File f ->
-            f.absolutePath.replace(' ', '\\ ')
+        def escapeFile = { File f -> f.absolutePath.replace(' ', '\\ ')
         }
         args.add('-R')
         def testClassesDirs = t.getTestClassesDirs()
@@ -182,16 +189,12 @@ class ScalaTestAction implements Action<Test> {
                 args.add(it)
             }
         }
-        def suites = t.extensions.findByName(SUITES) as List<String>
         suites?.toSet()?.each {
             args.add('-s')
             args.add(it)
         }
-        def config = t.extensions.findByName(CONFIG) as Map<String, ?>
-        config?.entrySet()?.each { entry ->
-            args.add("-D${entry.key}=${entry.value}")
+        config?.entrySet()?.each { entry -> args.add("-D${entry.key}=${entry.value}")
         }
-        def reporters = t.extensions.findByName(REPORTERS) as List<String>
         reporters?.toSet()?.each {
             args.add('-C')
             args.add(it)

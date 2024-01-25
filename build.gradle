@@ -52,6 +52,8 @@ test {
 if (project.version == 'unspecified') {
     version = '0.1-SNAPSHOT'
 }
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
 
 task showVersion() { doLast { println(project.version) } }
 
@@ -121,5 +123,6 @@ publishing {
 }
 
 signing {
+    required { isReleaseVersion }
     sign publishing.publications.mavenJava
 }
