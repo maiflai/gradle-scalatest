@@ -1,5 +1,6 @@
 package com.github.maiflai
 
+import groovy.transform.Internal
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
@@ -8,12 +9,15 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 /**
  * Applies the Java & Scala Plugins
  * Replaces Java Test actions with a <code>ScalaTestAction</code>
  */
-class ScalaTestPlugin implements Plugin<Project> {
+abstract class ScalaTestPlugin implements Plugin<Project> {
 
     static String MODE = 'com.github.maiflai.gradle-scalatest.mode'
     static enum Mode {
@@ -38,9 +42,9 @@ class ScalaTestPlugin implements Plugin<Project> {
                     break
                 case Mode.append:
                     configure(t.tasks.create(
-                            name: 'scalatest', type: Test, group: 'verification',
-                            description: 'Run scalatest unit tests',
-                            dependsOn: t.tasks.testClasses) as Test)
+                        name: 'scalatest', type: Test, group: 'verification',
+                        description: 'Run scalatest unit tests',
+                        dependsOn: t.tasks.testClasses) as Test)
                     break
             }
         }
@@ -57,10 +61,6 @@ class ScalaTestPlugin implements Plugin<Project> {
     static void configure(Test test) {
         test.maxParallelForks = Runtime.runtime.availableProcessors()
         //noinspection GroovyAssignabilityCheck
-        test.actions = [
-                new JacocoTestAction(),
-                new ScalaTestAction()
-        ]
         test.testLogging.exceptionFormat = TestExceptionFormat.SHORT
         test.extensions.add(ScalaTestAction.TAGS, new PatternSet())
         List<String> suites = []
@@ -76,6 +76,24 @@ class ScalaTestPlugin implements Plugin<Project> {
         test.extensions.add("reporter", { String name -> reporters.add(name) })
         test.extensions.add("reporters", { String... name -> reporters.addAll(name) })
         test.testLogging.events = TestLogEvent.values() as Set
+
+        def scalaTestAction = test.project.objects.newInstance(ScalaTestAction)
+        scalaTestAction.suites = suites
+        scalaTestAction.config = config
+        scalaTestAction.reporters = reporters
+
+        test.actions = [scalaTestAction]
+
+        test.project.afterEvaluate {
+            // java.lang.InternalError: Malformed class name when finding by type
+            def jacoco = test.extensions.findByName('jacoco')
+            if (jacoco && jacoco.enabled) {
+                def jacocoJavaAgent = jacoco.getAsJvmArg()
+                if (!test.allJvmArgs.contains(jacocoJavaAgent)) {
+                    test.jvmArgs jacocoJavaAgent
+                }
+            }
+        }
     }
 
 }
