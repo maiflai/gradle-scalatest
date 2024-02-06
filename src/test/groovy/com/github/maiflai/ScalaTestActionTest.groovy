@@ -315,4 +315,12 @@ class ScalaTestActionTest {
         def args = commandLine(test)
         assertThat(args, hasOption('-R', '/serviceuitest-1.1beta4.jar /myjini /target/class\\ files'))
     }
+
+    @Test
+    void spanScaleFactor() throws Exception {
+        Task test = testTask()
+        test.spanScaleFactor 10.5
+        def args = commandLine(test)
+        assertThat(args, hasOption('-F', '10.5'))
+    }
 }

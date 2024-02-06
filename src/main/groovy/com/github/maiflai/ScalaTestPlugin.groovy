@@ -75,6 +75,10 @@ class ScalaTestPlugin implements Plugin<Project> {
         test.extensions.add(ScalaTestAction.REPORTERS, reporters)
         test.extensions.add("reporter", { String name -> reporters.add(name) })
         test.extensions.add("reporters", { String... name -> reporters.addAll(name) })
+        List<Float> spanScaleFactor = []
+        test.extensions.add(ScalaTestAction.SPAN_SCALE_FACTOR, spanScaleFactor)
+        test.extensions.add("spanScaleFactor", { Float factor -> spanScaleFactor.add(factor) })
+
         test.testLogging.events = TestLogEvent.values() as Set
     }
 
