@@ -21,7 +21,12 @@ ext {
     sourceUrl = 'https://github.com/maiflai/gradle-scalatest.git'
 }
 
-targetCompatibility = '1.8'
+java {
+    toolchain {
+        // "Executing Gradle on JVM versions 16 and lower has been deprecated"
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -47,6 +52,10 @@ test.dependsOn(jar)
 
 test {
     testLogging.showStandardStreams = System.env.CI == 'true'
+}
+
+tasks.withType(Test).configureEach {
+    it.jvmArgs('--add-opens=java.base/java.lang=ALL-UNNAMED')
 }
 
 if (project.version == 'unspecified') {
