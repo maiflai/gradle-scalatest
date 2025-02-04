@@ -8,6 +8,9 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
 
 /**
  * Applies the Java & Scala Plugins
@@ -18,6 +21,13 @@ class ScalaTestPlugin implements Plugin<Project> {
     static String MODE = 'com.github.maiflai.gradle-scalatest.mode'
     static enum Mode {
         replaceAll, replaceOne, append
+    }
+
+    private ExecOperations execOperations
+
+    @Inject
+    ScalaTestPlugin(ExecOperations execOperations) {
+        this.execOperations = execOperations
     }
 
     @Override
@@ -54,12 +64,12 @@ class ScalaTestPlugin implements Plugin<Project> {
         }
     }
 
-    static void configure(Test test) {
+    void configure(Test test) {
         test.maxParallelForks = Runtime.runtime.availableProcessors()
         //noinspection GroovyAssignabilityCheck
         test.actions = [
                 new JacocoTestAction(),
-                new ScalaTestAction()
+                new ScalaTestAction(execOperations)
         ]
         test.testLogging.exceptionFormat = TestExceptionFormat.SHORT
         test.extensions.add(ScalaTestAction.TAGS, new PatternSet())
