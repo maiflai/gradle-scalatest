@@ -5,7 +5,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.15.0"
+        classpath "com.gradle.publish:plugin-publish-plugin:1.3.1"
     }
 }
 
@@ -43,11 +43,6 @@ task groovydocJar(type: Jar, dependsOn: groovydoc) {
     archiveClassifier = 'groovydoc'
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
 test.dependsOn(jar)
 
 test {
@@ -74,16 +69,18 @@ def propOrDefault(String property) {
     }
 }
 
-pluginBundle {
+gradlePlugin {
     website = project.websiteUrl
     vcsUrl = project.sourceUrl
     description = project.description
-    tags = ['testing', 'scala', 'scalatest']
 
     plugins {
         scalatestPlugin {
             id = 'com.github.maiflai.scalatest'
+            implementationClass = 'com.github.maiflai.ScalaTestPlugin'
             displayName = 'Gradle ScalaTest plugin'
+            description = project.description
+            tags = ['testing', 'scala', 'scalatest']
         }
     }
 }
@@ -124,7 +121,6 @@ publishing {
             }
             from components.java
             artifact groovydocJar
-            artifact sourcesJar
         }
     }
 }
@@ -132,3 +128,4 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
+project.tasks.publishMavenJavaPublicationToMavenRepository.inputs.files(project.tasks.signMavenJavaPublication)
