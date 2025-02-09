@@ -1,6 +1,5 @@
 package com.github.maiflai
 
-import groovy.transform.Immutable
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.logging.configuration.ConsoleOutput
@@ -10,8 +9,8 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.internal.UncheckedException
-import org.gradle.process.internal.DefaultExecActionFactory
-import org.gradle.process.internal.JavaExecAction
+import org.gradle.process.ExecOperations
+import org.gradle.process.JavaExecSpec
 
 import java.util.regex.Pattern
 
@@ -21,7 +20,6 @@ import java.util.regex.Pattern
  * <p>Classpath, JVM Args and System Properties are propagated.</p>
  * <p>Tests are launched against the testClassesDir.</p>
  */
-@Immutable
 class ScalaTestAction implements Action<Test> {
 
     static String TAGS = 'tags'
@@ -29,9 +27,15 @@ class ScalaTestAction implements Action<Test> {
     static String CONFIG = '_config'
     static String REPORTERS = '_reporters'
 
+    private ExecOperations execOperations;
+
+    ScalaTestAction(ExecOperations execOperations) {
+        this.execOperations = execOperations
+    }
+
     @Override
     void execute(Test t) {
-        def result = makeAction(t).execute()
+        def result = execOperations.javaexec(makeAction(t))
         if (result.exitValue != 0) {
             handleTestFailures(t)
         }
@@ -64,15 +68,15 @@ class ScalaTestAction implements Action<Test> {
     }
 
 
-    static JavaExecAction makeAction(Test t) {
-        JavaExecAction javaExecHandleBuilder = DefaultExecActionFactory.root(t.project.gradle.gradleUserHomeDir).newJavaExecAction()
-        t.copyTo(javaExecHandleBuilder)
-        javaExecHandleBuilder.getMainClass().set('org.scalatest.tools.Runner')
-        javaExecHandleBuilder.setClasspath(t.getClasspath())
-        javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
-        javaExecHandleBuilder.setArgs(getArgs(t))
-        javaExecHandleBuilder.setIgnoreExitValue(true)
-        return javaExecHandleBuilder
+    static Action<? extends JavaExecSpec> makeAction(Test t) {
+        return { JavaExecSpec javaExecHandleBuilder ->
+            t.copyTo(javaExecHandleBuilder)
+            javaExecHandleBuilder.getMainClass().set('org.scalatest.tools.Runner')
+            javaExecHandleBuilder.setClasspath(t.getClasspath())
+            javaExecHandleBuilder.setJvmArgs(t.getAllJvmArgs())
+            javaExecHandleBuilder.setArgs(getArgs(t))
+            javaExecHandleBuilder.setIgnoreExitValue(true)
+        }
     }
 
     static Set<TestLogEvent> other(Set<TestLogEvent> required) {

@@ -16,8 +16,8 @@ repositories {
 
 dependencies {
     implementation 'org.scala-lang:scala-library:2.12.10'
-    testImplementation 'org.scalatest:scalatest_2.12:3.0.0'
-    testRuntimeOnly 'org.pegdown:pegdown:1.6.0'
+    testImplementation 'org.scalatest:scalatest-funsuite_2.12:3.2.19'
+    testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 }
 
 test {
