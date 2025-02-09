@@ -1,6 +1,6 @@
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class MySpec extends FunSuite {
+class MySpec extends AnyFunSuite {
   test("bob") {
   }
   test("rita") {
