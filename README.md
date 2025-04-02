@@ -14,7 +14,7 @@ order to create the HTML report.
 ```groovy
 dependencies {
   testCompile 'org.scalatest:scalatest_2.13:3.2.0'
-  testRuntime 'com.vladsch.flexmark:flexmark-all:0.35.10'
+  testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
   // note that older versions of scalatest have a testRuntime dependency on pegdown to produce HTML reports.
 }
 ```
