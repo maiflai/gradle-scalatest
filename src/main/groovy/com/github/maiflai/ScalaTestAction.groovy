@@ -28,9 +28,11 @@ class ScalaTestAction implements Action<Test> {
     static String REPORTERS = '_reporters'
 
     private ExecOperations execOperations;
+    private ConsoleOutput consoleOutput;
 
-    ScalaTestAction(ExecOperations execOperations) {
+    ScalaTestAction(ExecOperations execOperations, Test test) {
         this.execOperations = execOperations
+        this.consoleOutput = test.getProject().getGradle().getStartParameter().getConsoleOutput()
     }
 
     @Override
@@ -68,7 +70,7 @@ class ScalaTestAction implements Action<Test> {
     }
 
 
-    static Action<? extends JavaExecSpec> makeAction(Test t) {
+    Action<? extends JavaExecSpec> makeAction(Test t) {
         return { JavaExecSpec javaExecHandleBuilder ->
             t.copyTo(javaExecHandleBuilder)
             javaExecHandleBuilder.getMainClass().set('org.scalatest.tools.Runner')
@@ -104,8 +106,8 @@ class ScalaTestAction implements Action<Test> {
         other(t.testLogging.events).collect { drop(it, t.testLogging.displayGranularity) }.join('')
     }
 
-    static String color(Test t) {
-        if (t.getProject().getGradle().getStartParameter().getConsoleOutput() == ConsoleOutput.Plain) {
+    private String color() {
+        if (consoleOutput == ConsoleOutput.Plain) {
             'W'
         } else {
             ''
@@ -126,13 +128,13 @@ class ScalaTestAction implements Action<Test> {
 
     static String durations = 'D'
 
-    static String reporting(Test t) {
-        return '-o' + ((dropped(t) + color(t) + exceptions(t) + durations) as List).unique().sort().join('')
+    private String reporting(Test t) {
+        return '-o' + ((dropped(t) + color() + exceptions(t) + durations) as List).unique().sort().join('')
     }
 
     private static Pattern maybeTest = ~/Spec|Test|Suite/
 
-    private static Iterable<String> getArgs(Test t) {
+    private Iterable<String> getArgs(Test t) {
         List<String> args = new ArrayList<String>()
         // this represents similar behaviour to the existing JUnit test action
         if (t.testLogging.events) {
