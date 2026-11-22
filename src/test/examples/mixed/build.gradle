@@ -1,10 +1,10 @@
 buildscript {
     repositories {
         // need to get up to the working directory of gradle-plugins build
-        flatDir dir: "${project.projectDir}/../../../../build/libs"
+        flatDir { dir "${project.projectDir}/../../../../build/libs" }
     }
     dependencies {
-        classpath name: 'gradle-scalatest', version: '+'
+        classpath ':gradle-scalatest:+'
     }
 }
 
