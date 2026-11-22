@@ -32,7 +32,7 @@ abstract class BaseExampleTest {
                 .newBuild()
                 .setStandardOutput(System.out)
                 .setStandardError(System.err)
-                .addArguments('--console=plain', '--warning-mode=all')
+                .addArguments('--console=plain', '--warning-mode=all', '--configuration-cache')
     }
 
 }
