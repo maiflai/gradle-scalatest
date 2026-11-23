@@ -1,6 +1,8 @@
 package com.github.maiflai
 
 import org.gradle.api.Plugin
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.scala.ScalaPlugin
@@ -24,10 +26,12 @@ class ScalaTestPlugin implements Plugin<Project> {
     }
 
     private ExecOperations execOperations
+    private Provider<Mode> mode 
 
     @Inject
-    ScalaTestPlugin(ExecOperations execOperations) {
+    ScalaTestPlugin(ExecOperations execOperations, ProviderFactory providers) {
         this.execOperations = execOperations
+        this.mode = providers.gradleProperty(MODE).map { it -> Mode.valueOf(it) }.orElse(Mode.replaceAll)
     }
 
     @Override
@@ -35,7 +39,7 @@ class ScalaTestPlugin implements Plugin<Project> {
         if (!t.plugins.hasPlugin(ScalaTestPlugin)) {
             t.plugins.apply(JavaPlugin)
             t.plugins.apply(ScalaPlugin)
-            switch (getMode(t)) {
+            switch (mode.get()) {
                 case Mode.replaceAll:
                     t.tasks.withType(Test).tap { configureEach { configure(it) } }
                     break
@@ -60,23 +64,11 @@ class ScalaTestPlugin implements Plugin<Project> {
         }
     }
 
-    private static Mode getMode(Project t) {
-        if (!t.hasProperty(MODE)) {
-            return Mode.replaceAll
-        } else {
-            return Mode.valueOf(t.properties[MODE].toString())
-        }
-    }
-
     void configure(Test test) {
         test.maxParallelForks = Runtime.runtime.availableProcessors()
-        //noinspection GroovyAssignabilityCheck
-        test.actions = [
-                new JacocoTestAction(),
-                new ScalaTestAction(execOperations, test)
-        ]
         test.testLogging.exceptionFormat = TestExceptionFormat.SHORT
-        test.extensions.add(ScalaTestAction.TAGS, new PatternSet())
+        PatternSet tags = new PatternSet()
+        test.extensions.add(ScalaTestAction.TAGS, tags)
         List<String> suites = []
         test.extensions.add(ScalaTestAction.SUITES, suites)
         test.extensions.add("suite", { String name -> suites.add(name) })
@@ -90,6 +82,11 @@ class ScalaTestPlugin implements Plugin<Project> {
         test.extensions.add("reporter", { String name -> reporters.add(name) })
         test.extensions.add("reporters", { String... name -> reporters.addAll(name) })
         test.testLogging.events = TestLogEvent.values() as Set
+        //noinspection GroovyAssignabilityCheck
+        test.actions = [
+                new JacocoTestAction(test.extensions.findByName('jacoco')),
+                new ScalaTestAction(execOperations, test, config, suites, tags, reporters)
+        ]
     }
 
 }

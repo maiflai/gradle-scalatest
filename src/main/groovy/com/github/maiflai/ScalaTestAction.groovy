@@ -27,12 +27,20 @@ class ScalaTestAction implements Action<Test> {
     static String CONFIG = '_config'
     static String REPORTERS = '_reporters'
 
-    private ExecOperations execOperations;
-    private ConsoleOutput consoleOutput;
+    private Map<String, ?> config
+    private List<String> suites
+    private List<String> reporters 
+    private PatternSet tags
+    private ExecOperations execOperations
+    private ConsoleOutput consoleOutput
 
-    ScalaTestAction(ExecOperations execOperations, Test test) {
+    ScalaTestAction(ExecOperations execOperations, Test test, Map<String, ?> config, List<String> suites, PatternSet tags, List<String> reporters) {
         this.execOperations = execOperations
         this.consoleOutput = test.getProject().getGradle().getStartParameter().getConsoleOutput()
+        this.config = config
+        this.suites = suites
+        this.tags = tags
+        this.reporters = reporters
     }
 
     @Override
@@ -177,28 +185,22 @@ class ScalaTestAction implements Action<Test> {
             dest.mkdirs()
             args.add(dest.getAbsolutePath())
         }
-        def tags = t.extensions.findByName(TAGS) as PatternSet
-        if (tags) {
-            tags.includes.each {
-                args.add('-n')
-                args.add(it)
-            }
-            tags.excludes.each {
-                args.add('-l')
-                args.add(it)
-            }
+        tags.includes.each {
+            args.add('-n')
+            args.add(it)
         }
-        def suites = t.extensions.findByName(SUITES) as List<String>
-        suites?.toSet()?.each {
+        tags.excludes.each {
+            args.add('-l')
+            args.add(it)
+        }
+        suites.toSet().each {
             args.add('-s')
             args.add(it)
         }
-        def config = t.extensions.findByName(CONFIG) as Map<String, ?>
-        config?.entrySet()?.each { entry ->
+        config.entrySet().each { entry ->
             args.add("-D${entry.key}=${entry.value}")
         }
-        def reporters = t.extensions.findByName(REPORTERS) as List<String>
-        reporters?.toSet()?.each {
+        reporters.toSet().each {
             args.add('-C')
             args.add(it)
         }
