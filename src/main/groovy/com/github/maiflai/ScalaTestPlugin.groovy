@@ -56,7 +56,8 @@ class ScalaTestPlugin implements Plugin<Project> {
                     t.tasks.register('scalatest', Test) {
                         group = 'verification'
                         description = 'Run scalatest unit tests'
-                        dependsOn t.tasks.testClasses
+                        testClassesDirs = t.testing.suites.test.sources.output.classesDirs
+                        classpath = t.testing.suites.test.sources.runtimeClasspath
                         configure(it)
                     }
                     break
