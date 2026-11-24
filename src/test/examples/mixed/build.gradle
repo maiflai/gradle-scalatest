@@ -16,13 +16,26 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation 'org.scala-lang:scala-library:2.13.15'
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.scalatest:scalatest_2.13:3.2.19'
-    testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+scala.scalaVersion = '2.13.15'
+
+testing {
+    suites {
+        test {
+            dependencies {
+                implementation project()
+                implementation 'junit:junit:4.13.2'
+                implementation 'org.scalatest:scalatest_2.13:3.2.19'
+                runtimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+            }
+            targets {
+                register('integrationTest') { 
+                    testTask.configure {
+                        systemProperty 'category', 'integration' 
+                    }
+                }
+            }
+        }
+    }
 }
 
-task integrationTest(type: Test) {
-    
-}
+

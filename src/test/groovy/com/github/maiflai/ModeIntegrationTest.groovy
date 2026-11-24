@@ -55,7 +55,7 @@ class ModeIntegrationTest extends BaseExampleTest {
     private TypeSafeMatcher<File> isJUnitReport = new TypeSafeMatcher<File>() {
         @Override
         protected boolean matchesSafely(File file) {
-            return contains(file, 'http://www.gradle.org')
+            return contains(file, 'www.gradle.org')
         }
 
         @Override
