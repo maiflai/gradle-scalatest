@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url = "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
@@ -38,8 +38,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
 }
 
-task groovydocJar(type: Jar, dependsOn: groovydoc) {
-    from "$buildDir/docs/groovydoc"
+tasks.register('groovydocJar', Jar) {
+    dependsOn groovydoc
+    from "${getLayout().getBuildDirectory()}/docs/groovydoc"
     archiveClassifier = 'groovydoc'
 }
 
@@ -57,7 +58,7 @@ if (project.version == 'unspecified') {
     version = '0.1-SNAPSHOT'
 }
 
-task showVersion() { doLast { println(project.version) } }
+tasks.register('showVersion') { doLast { println(project.version) } }
 
 
 
