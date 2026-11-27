@@ -26,6 +26,7 @@ class ScalaTestAction implements Action<Test> {
     static String SUITES = '_suites'
     static String CONFIG = '_config'
     static String REPORTERS = '_reporters'
+    static String SPAN_SCALE_FACTOR = '_spanScaleFactor'
 
     private Map<String, ?> config
     private List<String> suites
@@ -203,6 +204,11 @@ class ScalaTestAction implements Action<Test> {
         reporters.toSet().each {
             args.add('-C')
             args.add(it)
+        }
+        def spanScaleFactor = t.extensions.findByName(SPAN_SCALE_FACTOR) as List<Float>
+        spanScaleFactor?.toSet()?.each {
+            args.add('-F')
+            args.add(it.toString())
         }
         assert args.every { it.length() > 0 }
         return args
